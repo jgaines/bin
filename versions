@@ -12,7 +12,7 @@ iscmd() {
     fi
 }
 
-if [ -n "$(which erl)" ]
+if iscmd erl
 then
     echo "Erlang    $(erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().' -noshell)"
     echo "          $(which erl)"
@@ -23,7 +23,7 @@ else
     echo
 fi
 
-if [ -n "$(which julia)" ]
+if iscmd julia
 then
     # All this goofiness is because I hate waiting for julia to load
     # just to display the version.  This junk extracts the version
@@ -48,7 +48,7 @@ then
     echo
 fi
 
-if [ -n "$(which node)" ]
+if iscmd node
 then
     echo "Node.js   $(node -v 2>&1)"
     echo "          $(which node)"
@@ -66,7 +66,7 @@ else
     fi
 fi
 
-if [ -n "$(which ocaml)" ]
+if iscmd ocaml
 then
     echo "Ocaml     $(ocaml -version 2>&1)"
     echo "          $(which ocaml)"
@@ -77,7 +77,7 @@ else
     echo
 fi
 
-if [ -n "$(which perl)" ]
+if iscmd perl
 then
     echo "Perl      $(perl -e 'print $]')"
     echo "          $(which perl)"
@@ -85,14 +85,14 @@ then
     echo
 fi
 
-if [ -n "$(which pure)" ]
+if iscmd pure
 then
     echo "Pure      $(pure --version|head -1|cut -d' ' -f2-)"
     echo "          $(which pure)"
     echo
 fi
 
-if [ -n "$(which python)" ]
+if iscmd python
 then
     echo "Python    $(python -V 2>&1)"
     echo "          $(which python)"
@@ -100,7 +100,7 @@ then
     echo
 fi
 
-if [ -n "$(which ruby)" ]
+if iscmd ruby
 then
     echo "Ruby      $(ruby -v 2>&1)"
     echo "          $(which ruby)"
@@ -108,7 +108,7 @@ then
     echo
 fi
 
-if [ -n "$(which java)" ]
+if iscmd java
 then
     echo "Java      $(java -version 2>&1)"
     echo
@@ -119,26 +119,24 @@ then
     exit 0
 fi
 
-
-
-[ -n "$(which bash)"      ] && echo "Bash      $(bash --version | head -1)"
-[ -n "$(which csc)"       ] && echo "Chicken   $(csc -version | grep Version)"
-[ -n "$(which gawk)"      ] && echo "gawk      $(gawk --version | head -1)"
-[ -n "$(which gcc)"       ] && echo "gcc       $(gcc --version | head -1)"
-[ -n "$(which guile)"     ] && echo "guile     $(guile -v | head -1)"
-[ -n "$(which hackersh)"  ] && echo "hackersh  $(hackersh -V 2>&1)"
-[ -n "$(which lua)"       ] && echo "lua       $(lua -v)"
-[ -n "$(which pythonect)" ] && echo "pythonect $(pythonect -V 2>&1)"
-[ -n "$(which racket)"    ] && echo "racket    $(racket -v)"
-[ -n "$(which sbcl)"      ] && echo "SBCL      $(sbcl --version | cut -d' ' -f2)"
-[ -n "$(which slsh)"      ] && echo "slsh      $(slsh --version)"
-[ -n "$(which tclsh)"     ] && echo "tcl       $(echo 'puts $tcl_version' | tclsh)"
-[ -n "$(which zsh)"       ] && echo "zsh       $(zsh --version)"
+iscmd bash      && echo "Bash      $(bash --version | head -1)"
+iscmd csc       && echo "Chicken   $(csc -version | grep Version)"
+iscmd gawk      && echo "gawk      $(gawk --version | head -1)"
+iscmd gcc       && echo "gcc       $(gcc --version | head -1)"
+iscmd guile     && echo "guile     $(guile -v | head -1)"
+iscmd hackersh  && echo "hackersh  $(hackersh -V 2>&1)"
+iscmd lua       && echo "lua       $(lua -v)"
+iscmd pythonect && echo "pythonect $(pythonect -V 2>&1)"
+iscmd racket    && echo "racket    $(racket -v)"
+iscmd sbcl      && echo "SBCL      $(sbcl --version | cut -d' ' -f2)"
+iscmd slsh      && echo "slsh      $(slsh --version)"
+iscmd tclsh     && echo "tcl       $(echo 'puts $tcl_version' | tclsh)"
+iscmd zsh       && echo "zsh       $(zsh --version)"
 echo
 
-[ -n "$(which bzr)"    ] && echo "bzr       $(bzr version | head -1)"
-[ -n "$(which fossil)" ] && echo "fossil    $(fossil -v)"
-[ -n "$(which git)"    ] && echo "git       $(git version)"
-[ -n "$(which hg)"     ] && echo "hg        $(hg version | head -1)"
-[ -n "$(which svn)"    ] && echo "svn       $(svn --version | head -1)"
+iscmd bzr     && echo "bzr       $(bzr version | head -1)"
+iscmd fossil  && echo "fossil    $(fossil -v)"
+iscmd git     && echo "git       $(git version)"
+iscmd hg      && echo "hg        $(hg version | head -1)"
+iscmd svn     && echo "svn       $(svn --version | head -1)"
 echo
