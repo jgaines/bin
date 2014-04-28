@@ -1,0 +1,144 @@
+#!/bin/bash
+echo "Current Language Versions"
+echo
+
+iscmd() {
+    cmd=$(which $1 2> /dev/null)
+    if [ -x "$cmd" ]
+    then
+        return 0
+    else
+        return 1
+    fi
+}
+
+if [ -n "$(which erl)" ]
+then
+    echo "Erlang    $(erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().' -noshell)"
+    echo "          $(which erl)"
+    # echo "          Use evm to change."
+    echo
+else
+    echo "Erlang    (none installed)"
+    echo
+fi
+
+if [ -n "$(which julia)" ]
+then
+    # All this goofiness is because I hate waiting for julia to load
+    # just to display the version.  This junk extracts the version
+    # info from the build_h.jl file.
+    # build_h="/usr/share/julia/base/build_h.jl"
+    # if [ -e  $build_h ]
+    # then
+    #     ver=$(grep BUILD_INFO $build_h|cut -d' ' -f5|tr -d '",')
+    #     pre=$(grep BUILD_INFO $build_h|cut -d',' -f8|tr -d ' )')
+    #     if [ "$pre" = "true" ]
+    #     then
+    #         pre="-prerelease"
+    #     else
+    #         pre=""
+    #     fi
+    #     bld=$(grep BUILD_INFO $build_h|cut -d',' -f5|tr -d ' ')
+    #     echo "Julia     $ver$pre+$bld"
+    # else
+	echo "Julia     $(julia -v 2>&1)"
+    # fi
+    echo "          $(which julia)"
+    echo
+fi
+
+if [ -n "$(which node)" ]
+then
+    echo "Node.js   $(node -v 2>&1)"
+    echo "          $(which node)"
+    echo "          Use nvm to change."
+    echo
+else
+    echo "Node.js   (none active)"
+    if [ -s "$HOME/.nvm/nvm.sh" ]
+    then
+	echo "          Use nvm to change."
+	echo
+    else
+	echo "          Install nvm to manage Node.js"
+	echo
+    fi
+fi
+
+if [ -n "$(which ocaml)" ]
+then
+    echo "Ocaml     $(ocaml -version 2>&1)"
+    echo "          $(which ocaml)"
+    # echo "          Installed with ocamlbrew (~/ocamlbrew/ocamlbrew -h)."
+    echo
+else
+    echo "Ocaml     (none installed)"
+    echo
+fi
+
+if [ -n "$(which perl)" ]
+then
+    echo "Perl      $(perl -e 'print $]')"
+    echo "          $(which perl)"
+    # echo "          Use perlbrew to change."
+    echo
+fi
+
+if [ -n "$(which pure)" ]
+then
+    echo "Pure      $(pure --version|head -1|cut -d' ' -f2-)"
+    echo "          $(which pure)"
+    echo
+fi
+
+if [ -n "$(which python)" ]
+then
+    echo "Python    $(python -V 2>&1)"
+    echo "          $(which python)"
+    # echo "          Use pyenv to change."
+    echo
+fi
+
+if [ -n "$(which ruby)" ]
+then
+    echo "Ruby      $(ruby -v 2>&1)"
+    echo "          $(which ruby)"
+    # echo "          $RUBY_MANAGE"
+    echo
+fi
+
+if [ -n "$(which java)" ]
+then
+    echo "Java      $(java -version 2>&1)"
+    echo
+fi
+
+if [ "$1" == "" ]
+then
+    exit 0
+fi
+
+
+
+[ -n "$(which bash)"      ] && echo "Bash      $(bash --version | head -1)"
+[ -n "$(which csc)"       ] && echo "Chicken   $(csc -version | grep Version)"
+[ -n "$(which gawk)"      ] && echo "gawk      $(gawk --version | head -1)"
+[ -n "$(which gcc)"       ] && echo "gcc       $(gcc --version | head -1)"
+[ -n "$(which guile)"     ] && echo "guile     $(guile -v | head -1)"
+[ -n "$(which hackersh)"  ] && echo "hackersh  $(hackersh -V 2>&1)"
+[ -n "$(which lua)"       ] && echo "lua       $(lua -v)"
+[ -n "$(which pythonect)" ] && echo "pythonect $(pythonect -V 2>&1)"
+[ -n "$(which racket)"    ] && echo "racket    $(racket -v)"
+[ -n "$(which sbcl)"      ] && echo "SBCL      $(sbcl --version | cut -d' ' -f2)"
+[ -n "$(which slsh)"      ] && echo "slsh      $(slsh --version)"
+[ -n "$(which tclsh)"     ] && echo "tcl       $(echo 'puts $tcl_version' | tclsh)"
+[ -n "$(which zsh)"       ] && echo "zsh       $(zsh --version)"
+echo
+
+[ -n "$(which bzr)"    ] && echo "bzr       $(bzr version | head -1)"
+[ -n "$(which fossil)" ] && echo "fossil    $(fossil -v)"
+[ -n "$(which git)"    ] && echo "git       $(git version)"
+[ -n "$(which hg)"     ] && echo "hg        $(hg version | head -1)"
+[ -n "$(which svn)"    ] && echo "svn       $(svn --version | head -1)"
+echo
