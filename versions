@@ -14,13 +14,17 @@ iscmd() {
 
 if iscmd erl
 then
-    echo "Erlang    $(erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().' -noshell)"
+    ever=$(erl -version 2>&1 | tr -d "\r\n" | cut -c8-)
+    over=$(erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().' -noshell | tr -d '\"\r\n')
+    echo "Erlang    $ever (OTP $over)"
+    #echo "Erlang    $(erl -version 2>&1)"
+    #echo "          OTP version $(erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().' -noshell | tr -d '\"')"
     echo "          $(which erl)"
-    # echo "          Use evm to change."
-    echo
+    echo "          Use kerl to manage multiple versions."
+    [ -z "$1" ] && echo
 else
     echo "Erlang    (none installed)"
-    echo
+    [ -z "$1" ] && echo
 fi
 
 if iscmd julia
@@ -45,7 +49,7 @@ then
 	echo "Julia     $(julia -v 2>&1)"
     # fi
     echo "          $(which julia)"
-    echo
+    [ -z "$1" ] && echo
 fi
 
 if iscmd node
@@ -53,16 +57,16 @@ then
     echo "Node.js   $(node -v 2>&1)"
     echo "          $(which node)"
     echo "          Use nvm to change."
-    echo
+    [ -z "$1" ] && echo
 else
     echo "Node.js   (none active)"
     if [ -s "$HOME/.nvm/nvm.sh" ]
     then
 	echo "          Use nvm to change."
-	echo
+        [ -z "$1" ] && echo
     else
 	echo "          Install nvm to manage Node.js"
-	echo
+        [ -z "$1" ] && echo
     fi
 fi
 
@@ -71,10 +75,10 @@ then
     echo "Ocaml     $(ocaml -version 2>&1)"
     echo "          $(which ocaml)"
     # echo "          Installed with ocamlbrew (~/ocamlbrew/ocamlbrew -h)."
-    echo
+    [ -z "$1" ] && echo
 else
     echo "Ocaml     (none installed)"
-    echo
+    [ -z "$1" ] && echo
 fi
 
 if iscmd perl
@@ -82,14 +86,14 @@ then
     echo "Perl      $(perl -e 'print $]')"
     echo "          $(which perl)"
     # echo "          Use perlbrew to change."
-    echo
+    [ -z "$1" ] && echo
 fi
 
 if iscmd pure
 then
     echo "Pure      $(pure --version|head -1|cut -d' ' -f2-)"
     echo "          $(which pure)"
-    echo
+    [ -z "$1" ] && echo
 fi
 
 if iscmd python
@@ -97,7 +101,7 @@ then
     echo "Python    $(python -V 2>&1)"
     echo "          $(which python)"
     # echo "          Use pyenv to change."
-    echo
+    [ -z "$1" ] && echo
 fi
 
 if iscmd ruby
@@ -105,27 +109,33 @@ then
     echo "Ruby      $(ruby -v 2>&1)"
     echo "          $(which ruby)"
     # echo "          $RUBY_MANAGE"
-    echo
+    [ -z "$1" ] && echo
 fi
 
 if iscmd java
 then
     echo "Java      $(java -version 2>&1)"
-    echo
+    [ -z "$1" ] && echo
 fi
 
-if [ "$1" == "" ]
-then
-    exit 0
-fi
+[ -z "$1" ] && exit 0
 
+echo
 iscmd bash      && echo "Bash      $(bash --version | head -1)"
+iscmd bigloo    && echo "Bigloo    $(bigloo -version)"
 iscmd csc       && echo "Chicken   $(csc -version | grep Version)"
+iscmd clisp     && echo "CLISP     $(clisp --version | head -1)"
+iscmd fan       && echo "Fantom    $(fan -version | grep fan.version | tr -d ' ' | cut -d: -f2)"
+iscmd gosh      && echo "Gauche    $(gosh -V)"
 iscmd gawk      && echo "gawk      $(gawk --version | head -1)"
 iscmd gcc       && echo "gcc       $(gcc --version | head -1)"
+iscmd ghc       && echo "GHC       $(ghc --version)"
+iscmd gsi       && echo "Gambit-C  $(gsi -v | cut -d' ' -f1-3)"
 iscmd guile     && echo "guile     $(guile -v | head -1)"
 iscmd hackersh  && echo "hackersh  $(hackersh -V 2>&1)"
+iscmd haxe      && echo "haxe      $(haxe -version 2>&1)"
 iscmd lua       && echo "lua       $(lua -v)"
+iscmd rock      && echo "ooc(rock) $(rock -V)"
 iscmd pythonect && echo "pythonect $(pythonect -V 2>&1)"
 iscmd racket    && echo "racket    $(racket -v)"
 iscmd sbcl      && echo "SBCL      $(sbcl --version | cut -d' ' -f2)"
@@ -135,7 +145,8 @@ iscmd zsh       && echo "zsh       $(zsh --version)"
 echo
 
 iscmd bzr     && echo "bzr       $(bzr version | head -1)"
-iscmd fossil  && echo "fossil    $(fossil -v)"
+iscmd darcs   && echo "darcs     $(darcs --version)"
+iscmd fossil  && echo "fossil    $(fossil version)"
 iscmd git     && echo "git       $(git version)"
 iscmd hg      && echo "hg        $(hg version | head -1)"
 iscmd svn     && echo "svn       $(svn --version | head -1)"

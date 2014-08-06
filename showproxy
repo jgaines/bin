@@ -1,0 +1,27 @@
+#!/bin/sh
+
+black=[1m[30m
+red=[1m[31m
+green=[1m[32m
+yellow=[1m[33m
+blue=[1m[34m
+magenta=[1m[35m
+cyan=[1m[36m
+white=[1m[37m
+normal=[0m
+bold=[1m
+
+echo ${yellow}Environment Proxy Settings:$normal
+env|grep -i prox|grep -v "_="|grep -v SUDO
+
+echo ${yellow}/etc/environment Proxy Setting:s$normal
+grep -i proxy /etc/environment
+
+echo ${yellow}/etc/network/interfaces Proxy Settings:$normal
+grep dns /etc/network/interfaces
+
+if [ -n "$(git --version|grep version)" ]
+then
+	echo ${yellow}Git Proxy Settings:$normal
+	git config --global --list | grep -i prox
+fi
