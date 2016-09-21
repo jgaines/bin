@@ -14,7 +14,7 @@ bold=[1m
 echo ${yellow}Environment Proxy Settings:$normal
 env|grep -i prox|grep -v "_="|grep -v SUDO
 
-echo ${yellow}/etc/environment Proxy Setting:s$normal
+echo ${yellow}/etc/environment Proxy Settings:$normal
 grep -i proxy /etc/environment
 
 echo ${yellow}/etc/network/interfaces Proxy Settings:$normal
