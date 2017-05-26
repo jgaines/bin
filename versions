@@ -1,0 +1,161 @@
+#!/bin/bash
+echo "Current Language Versions"
+echo
+
+iscmd() {
+    cmd=$(which $1 2> /dev/null)
+    if [ -x "$cmd" ]
+    then
+        return 0
+    else
+        return 1
+    fi
+}
+
+if iscmd erl
+then
+    ever=$(erl -version 2>&1 | tr -d "\r\n" | cut -c8-)
+    over=$(erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().' -noshell | tr -d '\"\r\n')
+    echo "Erlang    $ever (OTP $over)"
+    #echo "Erlang    $(erl -version 2>&1)"
+    #echo "          OTP version $(erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().' -noshell | tr -d '\"')"
+    echo "          $(which erl)"
+    echo "          Use kerl to manage multiple versions."
+    [ -z "$1" ] && echo
+else
+    echo "Erlang    (none installed)"
+    [ -z "$1" ] && echo
+fi
+
+if iscmd julia
+then
+    echo "Julia     $(julia -v 2>&1)"
+    echo "          $(which julia)"
+    [ -z "$1" ] && echo
+fi
+
+if iscmd node
+then
+    echo "Node.js   $(node -v 2>&1)"
+    echo "          $(which node)"
+    echo "          Use nvm to change."
+    [ -z "$1" ] && echo
+else
+    echo "Node.js   (none active)"
+    if [ -s "$HOME/.nvm/nvm.sh" ]
+    then
+	echo "          Use nvm to change."
+        [ -z "$1" ] && echo
+    else
+	echo "          Install nvm to manage Node.js"
+        [ -z "$1" ] && echo
+    fi
+fi
+
+if iscmd ocaml
+then
+    echo "Ocaml     $(ocaml -version 2>&1)"
+    echo "          $(which ocaml)"
+    # echo "          Installed with ocamlbrew (~/ocamlbrew/ocamlbrew -h)."
+    [ -z "$1" ] && echo
+else
+    echo "Ocaml     (none installed)"
+    [ -z "$1" ] && echo
+fi
+
+if iscmd perl
+then
+    echo "Perl      $(perl -e 'print $]')"
+    echo "          $(which perl)"
+    # echo "          Use perlbrew to change."
+    [ -z "$1" ] && echo
+fi
+
+if iscmd pure
+then
+    echo "Pure      $(pure --version|head -1|cut -d' ' -f2-)"
+    echo "          $(which pure)"
+    [ -z "$1" ] && echo
+fi
+
+if iscmd python
+then
+    echo "Python    $(python -V 2>&1)"
+    echo "          $(which python)"
+    # echo "          Use pyenv to change."
+    [ -z "$1" ] && echo
+fi
+
+if iscmd ruby
+then
+    echo "Ruby      $(ruby -v 2>&1)"
+    echo "          $(which ruby)"
+    [ -n "$RUBY_MANAGE" ] && echo "          $RUBY_MANAGE"
+    [ -z "$1" ] && echo
+fi
+
+if iscmd java
+then
+    echo "Java      $(java -version 2>&1)"
+    [ -z "$1" ] && echo
+fi
+
+[ -z "$1" ] && exit 0
+
+echo
+iscmd bash      && echo "Bash       $(bash --version | head -1)"
+iscmd bigloo    && echo "Bigloo     $(bigloo -version)"
+iscmd ceylon    && echo "Ceylon     $(ceylon -v)"
+iscmd csc       && echo "Chicken    $(csc -version | grep Version)"
+iscmd clang     && echo "clang/LLVM $(clang --version | head -1)"
+iscmd ccl       && echo "Clozure    $(ccl --version)"
+iscmd clisp     && echo "CLISP      $(clisp --version | head -1)"
+iscmd elixir    && echo "Elixir     $(elixir -v | tail -1 | cut -d' ' -f2 )"
+iscmd fan       && echo "Fantom     $(fan -version | grep fan.version | tr -d ' ' | cut -d: -f2)"
+iscmd frink     && echo "Frink      $(frink -v 2>&1)"
+iscmd fsharpc   && echo "F#         $(fsharpc --help | head -1)"
+iscmd gsi       && echo "Gambit-C   $(gsi -v | cut -d' ' -f1-3)"
+iscmd gosh      && echo "Gauche     $(gosh -V)"
+iscmd gawk      && echo "gawk       $(gawk --version | head -1)"
+iscmd gcc       && echo "gcc        $(gcc --version | head -1)"
+iscmd ghc       && echo "GHC        $(ghc --version)"
+iscmd go        && echo "Go         $(go version)"
+iscmd groovy    && echo "Groovy     $(groovy --version)"
+iscmd guile     && echo "guile      $(guile -v | head -1)"
+iscmd hackersh  && echo "hackersh   $(hackersh -V 2>&1)"
+iscmd haxe      && echo "haxe       $(haxe -version 2>&1)"
+iscmd kotlinc   && echo "Kotlin     $(kotlinc -version 2>&1 | cut -b7-)"
+iscmd lua       && echo "lua        $(lua -v)"
+iscmd luajit    && echo "luajit     $(luajit -v)"
+# last update to mirah is July 2012, looks dead...
+iscmd mirah     && echo "mirah      $(mirah -v 2>&1 | head -1) [looks dead]"
+# update with luarocks
+iscmd moon      && echo "moonscript $(moon -v)"
+iscmd neko      && echo "Neko       $(nekoc --help | head -1)"
+iscmd nim       && echo "nim        $(nim -v 2>&1 | head -1)"
+iscmd nuitka    && echo "Nuitka     $(nuitka --version)"
+iscmd rock      && echo "ooc(rock)  $(rock -V)"
+iscmd ponyc     && echo "pony       $(ponyc -v)"
+iscmd psc       && echo "PureScript $(psc --version)"
+iscmd pythonect && echo "pythonect  $(pythonect -V 2>&1)"
+iscmd racket    && echo "racket     $(racket -v)"
+iscmd rustc     && echo "rust       $(rustc --version)  (curl rustup.sh to update)"
+iscmd sbcl      && echo "SBCL       $(sbcl --version | cut -d' ' -f2)"
+iscmd slsh      && echo "slsh       $(slsh --version)"
+iscmd tclsh     && echo "tcl        $(echo 'puts $tcl_version' | tclsh)"
+iscmd zsh       && echo "zsh        $(zsh --version)"
+echo
+
+iscmd asdf      && echo "asdf       $(asdf | head -1)"
+iscmd lein      && echo "lein       $(lein -v) [Clojure]"
+iscmd sbt       && echo "sbt        $(sbt about|grep --color=never "This is sbt"|cut -d' ' -f4-5) [Scala]"
+echo
+
+iscmd bzr       && echo "bzr        $(bzr version | head -1)"
+iscmd cvs       && echo "cvs        $(cvs --version | grep client)"
+iscmd darcs     && echo "darcs      $(darcs --version)"
+iscmd fossil    && echo "fossil     $(fossil version)"
+iscmd git       && echo "git        $(git version)"
+iscmd hg        && echo "hg         $(hg version | head -1)"
+iscmd svn       && echo "svn        $(svn --version | head -1)"
+echo

@@ -1,0 +1,6 @@
+#!/bin/sh
+# Fire up godoc server on port localhost:3666 with playground enabled.
+if [ -z "$(ps -C godoc|grep godoc|grep -v grep)" ]
+then
+    godoc -http=:3666 -play=true &
+fi

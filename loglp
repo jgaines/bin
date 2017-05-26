@@ -1,0 +1,54 @@
+#!/bin/sh
+# Small script to log print requests rather than print them.
+# Execute 'loglp help' for more details (or just read further).
+logfile=~/lp.log
+case "$1" in
+on)
+	[[ ! -x $(dirname $0)/lp ]] && ln -s $0 $(dirname $0)/lp
+	echo "----------------------------------------" >> $logfile
+	echo "lp log started $(date)" >> $logfile
+;;
+off)
+	[[ -x $(dirname $0)/lp ]] && rm $(dirname $0)/lp
+	echo "----------------------------------------" >> $logfile
+	echo "lp log stopped $(date)" >> $logfile
+;;
+help|--help|"")
+	echo ""
+	echo "Usage: loglp [COMMAND]"
+	echo "   or: lp [normal lp parameters]"
+	echo ""
+	echo "In the first form, you can turn on/off trapping of lp calls, show/clear"
+	echo "the log file or show this help.  Once you've turned on trapping by using"
+	echo "'loglp on', all calls to lp will log to $logfile."
+	echo ""
+	echo "Commands:"
+	echo "  clear   deletes any existing log file: $logfile"
+	echo "  help    shows this help"
+	echo "  on      symbolically links lp to $0"
+	echo "  off     removes the symbolic link of lp"
+	echo "  show    cats the logfile: $logfile"
+	echo "  state   shows status of lp logging *"
+	echo ""
+	echo "* You can also just type 'lp --help' to determine if lp logging is active,"
+	echo "  if it is, you'll see this help message rather than lp's help message."
+	echo ""
+;;
+st|stat|state|status)
+	if [ -x $(dirname $0)/lp ]
+	then
+	    echo "lp logging is on"
+	else
+	    echo "lp logging is off"
+	fi
+;;
+show)
+	cat $logfile
+;;
+clear)
+	rm $logfile
+;;
+*)
+	echo "$(basename $0) called, $(date +'%m-%d-%y %H:%M:%S'), with $*" >> $logfile
+        echo "$(basename $0) logged a print job: $*"
+esac
