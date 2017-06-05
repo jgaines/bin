@@ -1,0 +1,7 @@
+#!/bin/bash
+# Small script to show apps running on docker01-04.
+for n in 01 02 03 04
+do
+  echo ========= docker$n ==========
+  ssh docker$n "ls -F | grep /"
+done

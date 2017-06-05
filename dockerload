@@ -3,5 +3,5 @@
 for n in 01 02 03 04
 do
   echo ========= docker$n ==========
-  ssh docker$n "uptime ; ls -F"
+  ssh docker$n "uptime ; ls -F | grep /"
 done
