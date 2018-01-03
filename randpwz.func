@@ -1,0 +1,7 @@
+# Generate random password.
+#
+# Defaults to 16 characters length, but you can specify a different length.
+randpw() {
+  noglob tr -dc _A-Za-z0-9.,=~@#%^: < /dev/urandom | head -c${1:-16}
+  echo
+}

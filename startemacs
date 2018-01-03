@@ -1,0 +1,4 @@
+#!/bin/sh
+# Kick off emacs into background (used by edit to start emacs when server not found).
+# setsid runs it in its own process so it's unaffected by the current shell terminating.
+setsid emacs $* &
