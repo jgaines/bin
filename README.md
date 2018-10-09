@@ -6,8 +6,12 @@ Just a place to keep a copy of my ~/bin hacks.
 | dockerlist | lists apps on docker hosts |
 | dockerload | shows Docker version and usage info for all docker hosts |
 | dockerserver | shows Docker and docker-compose versions on docker hosts |
+| flip | function to flip between administrator and eng-tools folders |
+| flip.func | sourced script to create flip function |
+| flip.py | python script to calculate the flipping |
 | gohere | update GOHOME to current directory, for Go language |
 | goplay | start up Go language godoc server |
+| goto | function to go to folders from partial prefix |
 | goto.func | shell script for goto function |
 | goto.py | brains behind goto function |
 | loglp | script to log print requests rather than print them |

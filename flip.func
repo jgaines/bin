@@ -1,0 +1,8 @@
+#!/bin/sh
+function flip {
+    ~/bin/flip.py $*
+    if [ $? == 0 ]
+    then
+        cd `cat ~/.flip_directory`
+    fi
+}
