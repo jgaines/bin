@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# "source cat" cat a file with source highlighting
+# requires pygmentize python app to be installed
+
 if [ ! -t 0 ] ; then
 	file=/dev/stdin
 elif [ -n "$1" -a -e "$1" ] ; then

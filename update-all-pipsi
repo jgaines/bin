@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Small script to run 'pipsi upgrade' on all pipsi installed apps.
+
+pipsi list | grep : | cut -d' ' -f4- | tr -d '":' | tail +2 | xargs -n1 pipsi upgrade

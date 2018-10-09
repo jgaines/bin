@@ -1,0 +1,74 @@
+#!/bin/bash
+
+START_DIR=$(pwd)
+extra=0
+dry_run=
+
+for opt in "$@"
+do
+    case "$opt" in
+        -n|--dry-run)
+            dry_run=echo
+            ;;
+        -e|--extra)
+            extra=1
+            ;;
+        -h|--help|-*)
+            echo ""
+            echo "Usage: $0 [options]"
+            echo ""
+            echo "Updates all git repos under $START_DIR."
+            echo ""
+            echo "Options:"
+            echo "  -n|--dry-run   just echo commands"
+            echo "  -e|--extra     output extra info"
+            echo "  -h|--help      show this help"
+            exit 0
+            ;;
+    esac
+done
+
+clean=
+changed=
+branched=
+
+for REPO in $( find ~/git -name .git -exec dirname \{\} \; ); do
+    cd $REPO
+    REMOTE=$(git remote -v)
+    BRANCH=$( git branch | grep '*' | cut -d' ' -f2 )
+    if [ -z "$REMOTE" ]; then
+        echo "NO REMOTE: $REPO"
+    else
+        if [ "$BRANCH" = "master" ]; then
+            CHANGES=$( git status --porcelain | grep -v '??' )
+            NUM_CHANGES=$( echo $CHANGES | wc -w )
+            if [ $NUM_CHANGES -eq 0 ]; then
+                echo "CLEAN: $REPO"
+                ${dry_run} git pull --rebase=preserve
+                clean="$clean:  $REPO"
+            else
+                echo "CHANGES: $REPO"
+                [ $extra -eq 1 ] && echo $CHANGES
+                [ $extra -eq 1 ] && echo '------------------------------'
+                changed="$changed:  $REPO"
+            fi
+        else
+            echo "BRANCHED: $REPO ($BRANCH)"
+            branched="$branched:  $REPO"
+        fi
+    fi
+    cd $START_DIR
+done
+
+if [ -z "$dry_run" ]; then
+    action="updated"
+else
+    action="updatable"
+fi
+
+echo '------------------------------'
+echo "Clean ($action):$(echo "$clean" | tr ':' '\n')"
+echo '------------------------------'
+echo "Modified (not $action):$(echo "$changed" | tr ':' '\n')"
+echo '------------------------------'
+echo "Branched (not $action):$(echo "$branched" | tr ':' '\n')"

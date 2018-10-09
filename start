@@ -1,0 +1,13 @@
+#!/bin/bash
+
+LOG=~/.local/log/start.log
+
+mkdir -p "$(dirname $LOG)"
+
+date > "$LOG"
+emacs --daemon &>> "$LOG" &
+exo-open --launch WebBrowser &>> "$LOG" &
+signal-reset pycharm &>> "$LOG" &
+xfce4-terminal --tab --tab --tab &>> "$LOG"
+# Can't start this until emacs --daemon is done, which takes longer than I want to wait.
+# edit -c
