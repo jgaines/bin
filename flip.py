@@ -53,6 +53,9 @@ def flip(_args):
             with open(os.path.expanduser('~/.flip_directory'), 'w') as f:
                     f.write(str(other_dir))
             return 0
+        else:
+            print(f"{other_dir} doesn't exist")
+            return 1
 
 
 if __name__ == '__main__':

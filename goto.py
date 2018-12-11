@@ -7,6 +7,8 @@ Add some actual command processing (either using stdlib or click).
 Set up external config file for specifying project dirs.  Make it look
 less like I wrote it under extreme time pressure. ;)
 
+Set up command line completion.
+
 Another idea is to roll up the shell integration script into this, so
 passing this script a parameter of some sort would cause it to puke
 out the proper shell function, so to use it on a unix box, you'd add a
@@ -36,6 +38,7 @@ import sys
 project_dirs = [
     '~/git/eng-tools',
     '~/git/administrator',
+    '~/git/docker',
     '~/projects',
     # '~/work/@active',
     # '~/work/@done',
