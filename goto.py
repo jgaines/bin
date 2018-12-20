@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """Goto project directory with somewhat fuzzy searching.
 
 Future Enhancements:
@@ -30,8 +30,6 @@ function goto {
 }
 
 """
-
-
 import os
 import sys
 
@@ -54,24 +52,47 @@ def goto_project(target):
         f.write(target)
     exit(0)
 
+
+def help():
+    print("usage goto [[parent...] project]\n"
+          "\n\n"
+          "Normal usage is to just supply a project name, that will search the list of project dirs\n"
+          "for folder starting with the specified project name.  Supplying a parent will limit to\n"
+          "parent directories starting with that string.  Calling goto with no arguments will\n"
+          "attempt to go to the last project goto went to."
+    )
+    exit(0)
+
+
 if len(sys.argv) > 1:
-    target = sys.argv[1].lower()
+    if sys.argv[1][0] == '-':
+        help()
+    *parents, target = [d.lower() for d in sys.argv[1:]]
 elif os.path.exists(os.path.expanduser(last_project_file)):
     with open(os.path.expanduser(last_project_file), 'r') as f:
         target = f.read()
     if os.path.exists(target):
         os.chdir(target)
         exit(0)
+    else:
+        target = None
 else:
     target = None
 
 if not target:
-    print 'usage: goto [project]'
-    exit(1)
+    help()
 
 for proj_dir in (os.path.expanduser(p) for p in project_dirs):
+    if parents:
+        # OK, since even I'm not going to grok this next time I read it, basically, we're
+        # checking to make sure that the list of parents matches the start of the tail end
+        # of the proj_dir path.  If not, don't look in this project dir.
+        if not all(d.startswith(p) for d, p
+                   in zip([n.lower() for n in proj_dir.split(os.path.sep) if n][-len(parents):],
+                          parents)):
+            continue
     # look for exact match to project directory
-    for name in os.listdir(os.path.expanduser(proj_dir)):
+    for name in sorted(os.listdir(proj_dir)):
         if os.path.isdir(os.path.join(proj_dir, name)):
             if name.lower().startswith(target):
                 goto_project(os.path.join(proj_dir, name))

@@ -1,6 +1,6 @@
 #!/bin/sh
 function goto {
-    python2 ~/bin/goto.py $*
+    ~/bin/goto.py $*
     if [ $? == 0 ]
     then
         cd `cat ~/.goto_last_project`
