@@ -57,7 +57,7 @@ def help():
     print("usage goto [[parent...] project]\n"
           "\n\n"
           "Normal usage is to just supply a project name, that will search the list of project dirs\n"
-          "for folder starting with the specified project name.  Supplying a parent will limit to\n"
+          "for a folder starting with the specified project name.  Supplying a parent will limit to\n"
           "parent directories starting with that string.  Calling goto with no arguments will\n"
           "attempt to go to the last project goto went to."
     )
