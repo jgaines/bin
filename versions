@@ -1,9 +1,13 @@
 #!/bin/bash
+
+# This script poops out the versions of languages/tools which are currently installed.
+# The languages here are all ones that I've messed around with at some point or another.
+
 echo "Current Language Versions"
 echo
 
 iscmd() {
-    cmd=$(which $1 2> /dev/null)
+    cmd=$(which "$1" 2> /dev/null)
     if [ -x "$cmd" ]
     then
         return 0
@@ -110,6 +114,7 @@ iscmd csc       && echo "Chicken    $(csc -version | grep Version)"
 iscmd clang     && echo "clang/LLVM $(clang --version | head -1)"
 iscmd ccl       && echo "Clozure    $(ccl --version)"
 iscmd clisp     && echo "CLISP      $(clisp --version | head -1)"
+iscmd crystal   && echo "Crystal    $(crystal version | head -1 | cut -d' ' -f2-)"
 iscmd elixir    && echo "Elixir     $(elixir -v | tail -1 | cut -d' ' -f2 )"
 iscmd fan       && echo "Fantom     $(fan -version | grep fan.version | tr -d ' ' | cut -d: -f2)"
 iscmd frink     && echo "Frink      $(frink -v 2>&1)"
