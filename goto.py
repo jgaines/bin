@@ -36,7 +36,15 @@ import sys
 project_dirs = [
     '~/git/eng-tools',
     '~/git/administrator',
+    '~/git/jgaines',
+    # TODO: These two should probably be encoded as '~/git/docker/**' or some
+    # such. Though maybe not, have to think about just how I want it to drill
+    # down into subdirectories so it's not looking inside project folders and
+    # getting confused by all the common subdirectories. I suppose it could
+    # only consider a folder containing a repo or at least stop drilling down
+    # when it finds a repo.
     '~/git/docker',
+    '~/git/docker/third-party/tbeadle',
     '~/projects',
     # '~/work/@active',
     # '~/work/@done',
@@ -61,7 +69,7 @@ def help():
           "parent directories starting with that string.  Calling goto with no arguments will\n"
           "attempt to go to the last project goto went to."
     )
-    exit(0)
+    exit(1)
 
 
 if len(sys.argv) > 1:
@@ -82,18 +90,36 @@ else:
 if not target:
     help()
 
-for proj_dir in (os.path.expanduser(p) for p in project_dirs):
-    if parents:
-        # OK, since even I'm not going to grok this next time I read it, basically, we're
-        # checking to make sure that the list of parents matches the start of the tail end
-        # of the proj_dir path.  If not, don't look in this project dir.
-        if not all(d.startswith(p) for d, p
-                   in zip([n.lower() for n in proj_dir.split(os.path.sep) if n][-len(parents):],
-                          parents)):
-            continue
-    # look for exact match to project directory
-    for name in sorted(os.listdir(proj_dir)):
-        if os.path.isdir(os.path.join(proj_dir, name)):
-            if name.lower().startswith(target):
-                goto_project(os.path.join(proj_dir, name))
-                exit(0)
+
+def find_match(parents, target, matcher):
+    for proj_dir in (os.path.expanduser(p) for p in project_dirs):
+        if parents:
+            # OK, since even I'm not going to grok this next time I read it, basically, we're
+            # checking to make sure that the list of parents matches the start of the tail end
+            # of the proj_dir path.  If not, don't look in this project dir.
+            if not all(d.startswith(p) for d, p
+                       in zip([n.lower() for n in proj_dir.split(os.path.sep) if n][-len(parents):],
+                              parents)):
+                continue
+        # look for exact match to project directory
+        for name in sorted(os.listdir(proj_dir)):
+            if os.path.isdir(os.path.join(proj_dir, name)):
+                if matcher(name, target):
+                    return os.path.join(proj_dir, name)
+    return None
+
+
+def start(name, target):
+    return name.lower().startswith(target)
+
+
+def contains(name, target):
+    return target in name.lower()
+
+
+for matcher in (start, contains):
+    project = find_match(parents, target, matcher)
+    if project:
+        goto_project(project)
+
+exit(1)
