@@ -1,0 +1,28 @@
+#!/bin/bash
+touchpad="DLL06E5:01 06CB:7A13 Touchpad"
+case "$1" in
+    on)
+	      xinput set-prop "$touchpad" "Synaptics Palm Detection" 1
+	      xinput set-prop "$touchpad" "Synaptics Palm Dimensions" 5, 5
+        ;;
+    off)
+	      xinput set-prop "$touchpad" "Synaptics Palm Detection" 0
+	      xinput set-prop "$touchpad" "Synaptics Palm Dimensions" 10, 200
+        ;;
+    show|st|stat|status)
+	      xinput list-props "$touchpad" | grep "Palm"
+        ;;
+    *)
+	      echo ""
+	      echo "Usage: palmdetction [COMMAND]"
+	      echo ""
+	      echo "Enable/disable touchpad palm detection so I can use laptop without wanting to chuck it"
+	      echo "out the nearest window."
+	      echo ""
+	      echo "Commands:"
+	      echo "  help    shows this help"
+	      echo "  on      enable touchpad"
+	      echo "  off     disable touchpad"
+	      echo "  show    show status"
+	      echo ""
+esac
