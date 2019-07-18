@@ -137,14 +137,14 @@ iscmd mirah     && echo "mirah      $(mirah -v 2>&1 | head -1) [looks dead]"
 # update with luarocks
 iscmd moon      && echo "moonscript $(moon -v)"
 iscmd neko      && echo "Neko       $(nekoc --help | head -1)"
-iscmd nim       && echo "nim        $(nim -v 2>&1 | head -1)"
+iscmd nim       && echo "nim        $(nim -v 2>&1 | head -1)  (choosenim update stable)"
 iscmd nuitka    && echo "Nuitka     $(nuitka --version)"
 iscmd rock      && echo "ooc(rock)  $(rock -V)"
 iscmd ponyc     && echo "pony       $(ponyc -v)"
 iscmd psc       && echo "PureScript $(psc --version)"
 iscmd pythonect && echo "pythonect  $(pythonect -V 2>&1)"
 iscmd racket    && echo "racket     $(racket -v)"
-iscmd rustc     && echo "rust       $(rustc --version)  (curl rustup.sh to update)"
+iscmd rustc     && echo "rust       $(rustc --version)  (rustup update)"
 iscmd sbcl      && echo "SBCL       $(sbcl --version | cut -d' ' -f2)"
 iscmd slsh      && echo "slsh       $(slsh --version)"
 iscmd tclsh     && echo "tcl        $(echo 'puts $tcl_version' | tclsh)"
@@ -152,8 +152,12 @@ iscmd zsh       && echo "zsh        $(zsh --version)"
 echo
 
 iscmd asdf      && echo "asdf       $(asdf | head -1)"
-iscmd lein      && echo "lein       $(lein -v) [Clojure]"
+# install with $ wget https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein
+iscmd lein      && echo "lein       $(lein -v) [Clojure]  (lein upgrade)"
 iscmd sbt       && echo "sbt        $(sbt about|grep --color=never "This is sbt"|cut -d' ' -f4-5) [Scala]"
+iscmd sdk       && echo "sdk        $(sdk version | tr -d '\n')"
+# echo "sdk    $(sdk version | tr -d '\n')"
+iscmd pyenv     && echo "pyenv      $(pyenv -v | cut -d' ' -f2)"
 echo
 
 iscmd bzr       && echo "bzr        $(bzr version | head -1)"
