@@ -1,0 +1,111 @@
+#!/usr/bin/env python
+"""Simple program to verify Python requirements are available in current environment.
+
+To use, simply run this program within the context of the python you want to check.
+
+Initial idea came from:
+
+https://stackoverflow.com/questions/16294819/check-if-my-python-has-all-required-packages
+"""
+from __future__ import print_function
+
+import argparse
+import os
+import pkg_resources
+import sys
+
+
+def yield_requirements(requirements_file):
+    """Return iterator over a requirements file.
+
+    This uses the pkg_resources.yield_lines function which handles comments and blank lines.
+
+    :param requirements_file: open file of requirements
+    :return: iterator over all requirements in the file
+    """
+    return pkg_resources.yield_lines(requirements_file.readlines())
+
+
+def load_requirements(files):
+    """Load all requirements as a list.
+
+    :param files: list of open files (argparse.FileType)
+    :return: combined list of all requirements
+    """
+    requirements = []
+    for req in files:
+        requirements.extend(yield_requirements(req))
+    return requirements
+
+
+def parse_args(argv):
+    parser = argparse.ArgumentParser(
+        description="Check that Python requirements are installed.",
+        epilog="By default checks that the requirements.txt are installed in the currently "
+        "active Python.  Return code is 0 on success or number of errors found.",
+    )
+    parser.add_argument(
+        "requirements_files",
+        metavar="FILE",
+        type=argparse.FileType("r"),
+        nargs="*",
+        help="requirements file(s) to check (default: requirements.txt)",
+    )
+    parser.add_argument(
+        "-v", "--verbose", action="store_true", help="be a little more verbose"
+    )
+    parser.add_argument("-V", "--version", action="version", version="1.0")
+    args = parser.parse_args(argv)
+    # Annoying way of adding default requirements.txt argument.
+    if not args.requirements_files:
+        args = parser.parse_args(["requirements.txt"] + argv)
+    return args
+
+
+def manage_errors(errors, error):
+    """Track and report unique errors.
+
+    :param errors: set of errors found so far
+    :param error: pkg_resources.ResolutionError derived exception class
+    :return: updated set of errors found
+    """
+    try:
+        message = error.report()
+    except AttributeError:
+        message = str(error)
+    if message not in errors:
+        print(message)
+        errors.add(message)
+    return errors
+
+
+def main(argv=sys.argv[1:]):
+    args = parse_args(argv)
+    requirements = load_requirements(args.requirements_files)
+    if args.verbose:
+        print("Checking individual requirements: {}.".format(", ".join(requirements)))
+    errors = set()
+    for requirement in requirements:
+        try:
+            pkg_resources.require(requirement)
+        except pkg_resources.VersionConflict as cvc:
+            errors = manage_errors(errors, cvc)
+        except pkg_resources.DistributionNotFound as dnf:
+            errors = manage_errors(errors, dnf)
+        except pkg_resources.ResolutionError as re:
+            errors = manage_errors(errors, re)
+    if args.verbose:
+        print("Checking all requirements at once.")
+    try:
+        pkg_resources.require(requirements)
+    except pkg_resources.VersionConflict as cvc:
+        errors = manage_errors(errors, cvc)
+    except pkg_resources.DistributionNotFound as dnf:
+        errors = manage_errors(errors, dnf)
+    except pkg_resources.ResolutionError as re:
+        errors = manage_errors(errors, re)
+    return len(errors)
+
+
+if __name__ == "__main__":
+    sys.exit(main())
