@@ -1,4 +1,4 @@
-#!/bin/sh
+# function to make flip.py work.  Should get absorbed into flip.py the same as goto.py does it.
 function flip {
     ~/bin/flip.py $*
     if [ $? == 0 ]

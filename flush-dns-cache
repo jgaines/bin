@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# Note, this was written for Ubuntu 17.04 and higher, which uses systemd, so it should work for any other systemd Linux.
+
+sudo systemd-resolve --flush-caches

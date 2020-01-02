@@ -168,3 +168,6 @@ iscmd git       && echo "git        $(git version)"
 iscmd hg        && echo "hg         $(hg version | head -1)"
 iscmd svn       && echo "svn        $(svn --version | head -1)"
 echo
+
+iscmd tup       && echo "tup        $(tup -v)  (~/src/tup git pull; ./tup)"
+echo

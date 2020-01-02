@@ -40,26 +40,31 @@ from typing import Any, Dict, List, Tuple
 from xdg import BaseDirectory
 
 
-# TODO: either side of the FLIPS list should allow multiple targets, so:
-#           administrator -> eng-tools, docker
-#       should be a valid flip entry, meaning that from administrator,
-#       first look in eng-tools then docker for a match and going the other way
-#       both eng-tools and docker flip back to administrator.
-#       FLIP_FLOP should be Dict[str, List[str]]
-#       The code for building FLIP_FLOP from FLIPS will probably have to be done
-#       with nested for loops to make it less confusing to follow.
-
-FLIPS = {  # TODO: This should probably be in an external config
-    ('administrator', 'eng-tools'),
+# This is a minimal default used if we can't find config file or a [flips]
+# section in config file.
+FLIPS = {
+    'administrator': ['eng-tools'],
 }
 
 
-FLIP_FLOP = {k: v for k, v in FLIPS}
-FLIP_FLOP.update((v, k) for k, v in FLIPS)
-
-
 def load_config(name:str=None) -> Tuple[Dict[str, Any], Dict[str, List[str]]]:
-    """Attempt to load config."""
+    """Attempt to load config.
+
+    Looks in the XDG config folders, for the first 'flip/flip.cfg' file.
+    Normally, you'd set up a local one at $HOME/.config/flip/flip.cfg. It's
+    expecting a standard INI format file with a section named [flips] with
+    `parent: alternate1, ..., alternateN` keys listing possible parallel
+    folders. For example:
+
+    [flips]
+    administrator: eng-tools, docker
+    projects: docker
+
+    That states that if you're in a folder whose parent is administrator, look
+    in ../eng-tools or ../docker for a possible matching folder to flip to. And
+    vice-versa so from docker/foo, it would look to see if ../administrator/foo
+    existed and flip there if so.
+    """
     options = dict()
     flips = dict()
     config = None
@@ -76,10 +81,28 @@ def load_config(name:str=None) -> Tuple[Dict[str, Any], Dict[str, List[str]]]:
             for src in config['flips']:
                 dst = [d.strip() for d in next(csv.reader(StringIO(config['flips'][src])))]
                 flips[src] = dst
+    if not flips:
+        flips = FLIPS
     return options, flips
 
 
 def make_flip_flops(flips: Dict[str, List[str]]) -> Dict[str, List[str]]:
+    """Covert table flips into flip-flops.
+
+    Given the input of:
+
+    flips = {
+        'administrator': ['eng-tools', 'docker'],
+    }
+
+    It will return:
+
+    {
+    'administrator': ['eng-tools', 'docker'],
+    'docker': ['administrator'],
+    'eng-tools': ['administrator'],
+    }
+    """
     flip_flops = defaultdict(list)
     flip_flops.update(flips)
     for src, destinations in flips.items():
@@ -91,19 +114,20 @@ def make_flip_flops(flips: Dict[str, List[str]]) -> Dict[str, List[str]]:
 
 def flip(_args):
     options, flips = load_config()
-
     flip_flops = make_flip_flops(flips)
-
     current_dir = pathlib.Path(os.getcwd())
     # TODO: Add code to try stepping up the dir tree until we find a point we
     # can flip or hit home folder or root or some such.
     # home_dir = path
     # other_parent = FLIP_FLOP.get(current_dir.parent.name, None)
     # while other_parent is None and current_dir
-    try:
-        other_parents = flip_flops[current_dir.parent.name]
-    except KeyError:
-        print("Couldn't figure out how to flip from here.")
+
+    # Because flip_flops is a defaultdict(list), it always returns other_parents,
+    # which will be an empty list if current_dir.parent.name is not in other_parents.
+    other_parents = flip_flops[current_dir.parent.name]
+
+    if not other_parents:
+        print(f"No flip targets found for parent dir: {current_dir.parent.name}.")
         return 1
     else:
         for other_parent in other_parents:
@@ -113,7 +137,8 @@ def flip(_args):
                     f.write(str(other_dir))
                 return 0
         else:
-            print(f"couldn't find {other_dir} in {', '.join(other_parents)}.")
+            relative_parents = (f"../{p}" for p in other_parents)
+            print(f"couldn't find {current_dir.name} in {', '.join(relative_parents)}.")
             return 1
 
 
