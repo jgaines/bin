@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+pipx list | awk '$1 = /package/ { print $2 }' | xargs -i pipx-check "{}"
