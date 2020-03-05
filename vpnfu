@@ -1,6 +1,8 @@
 #!/bin/bash
-# Simple script to connect VPN (along with helpful comments for me).
-echo Answer push to Password#2 prompt.
-sudo openconnect --juniper -pfs -b -u $USER https://secure.aa.arbor.net/nosplit
-echo ifconfig should show tun0 interface if all went well.
-ifconfig | grep tun0
+sudo openconnect \
+    --csd-wrapper="$HOME/git/third-party/openconnect/trojans/csd-post.sh" \
+    --authgroup=Tunnel-All-VPN \
+    --user="$USER" \
+    --pid-file=/var/run/openconnect.pid \
+    --background \
+    annarbor.netscout.com
