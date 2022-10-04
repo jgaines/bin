@@ -1,15 +1,20 @@
-#!/bin/bash
+#!/usr/bin/zsh
+
+# This script poops out the versions of languages/tools which are currently installed.
+# The languages here are all ones that I've messed around with at some point or another.
+
 echo "Current Language Versions"
 echo
 
 iscmd() {
-    cmd=$(which $1 2> /dev/null)
-    if [ -x "$cmd" ]
-    then
-        return 0
-    else
-        return 1
-    fi
+    return $(which "$1" &> /dev/null)
+    # cmd=$(which "$1" 2> /dev/null)
+    # if [ -x "$cmd" ]
+    # then
+    #     return 0
+    # else
+    #     return 1
+    # fi
 }
 
 if iscmd erl
@@ -29,25 +34,7 @@ fi
 
 if iscmd julia
 then
-    # All this goofiness is because I hate waiting for julia to load
-    # just to display the version.  This junk extracts the version
-    # info from the build_h.jl file.
-    # build_h="/usr/share/julia/base/build_h.jl"
-    # if [ -e  $build_h ]
-    # then
-    #     ver=$(grep BUILD_INFO $build_h|cut -d' ' -f5|tr -d '",')
-    #     pre=$(grep BUILD_INFO $build_h|cut -d',' -f8|tr -d ' )')
-    #     if [ "$pre" = "true" ]
-    #     then
-    #         pre="-prerelease"
-    #     else
-    #         pre=""
-    #     fi
-    #     bld=$(grep BUILD_INFO $build_h|cut -d',' -f5|tr -d ' ')
-    #     echo "Julia     $ver$pre+$bld"
-    # else
-	echo "Julia     $(julia -v 2>&1)"
-    # fi
+    echo "Julia     $(julia -v 2>&1)"
     echo "          $(which julia)"
     [ -z "$1" ] && echo
 fi
@@ -114,7 +101,7 @@ fi
 
 if iscmd java
 then
-    echo "Java      $(java -version 2>&1)"
+    echo "Java      $(java -version 2>&1 | head -1)"
     [ -z "$1" ] && echo
 fi
 
@@ -128,6 +115,7 @@ iscmd csc       && echo "Chicken    $(csc -version | grep Version)"
 iscmd clang     && echo "clang/LLVM $(clang --version | head -1)"
 iscmd ccl       && echo "Clozure    $(ccl --version)"
 iscmd clisp     && echo "CLISP      $(clisp --version | head -1)"
+iscmd crystal   && echo "Crystal    $(crystal version | head -1 | cut -d' ' -f2-)"
 iscmd elixir    && echo "Elixir     $(elixir -v | tail -1 | cut -d' ' -f2 )"
 iscmd fan       && echo "Fantom     $(fan -version | grep fan.version | tr -d ' ' | cut -d: -f2)"
 iscmd frink     && echo "Frink      $(frink -v 2>&1)"
@@ -150,13 +138,14 @@ iscmd mirah     && echo "mirah      $(mirah -v 2>&1 | head -1) [looks dead]"
 # update with luarocks
 iscmd moon      && echo "moonscript $(moon -v)"
 iscmd neko      && echo "Neko       $(nekoc --help | head -1)"
-iscmd nim       && echo "nim        $(nim -v 2>&1 | head -1)"
-iscmd nuitka    && echo "Nuitka     $(nuitka --version)"
+iscmd nim       && echo "nim        $(nim -v 2>&1 | head -1)  (choosenim update stable)"
+iscmd nuitka    && echo "Nuitka     $(nuitka --version | head -1)"
 iscmd rock      && echo "ooc(rock)  $(rock -V)"
-iscmd ponyc     && echo "pony       $(ponyc -v)"
+iscmd ponyc     && echo "pony       $(ponyc -v | head -1)  (ponyup)"
+iscmd psc       && echo "PureScript $(psc --version)"
 iscmd pythonect && echo "pythonect  $(pythonect -V 2>&1)"
 iscmd racket    && echo "racket     $(racket -v)"
-iscmd rustc     && echo "rust       $(rustc --version)  (curl rustup.sh to update)"
+iscmd rustc     && echo "rust       $(rustc --version)  (rustup update)"
 iscmd sbcl      && echo "SBCL       $(sbcl --version | cut -d' ' -f2)"
 iscmd slsh      && echo "slsh       $(slsh --version)"
 iscmd tclsh     && echo "tcl        $(echo 'puts $tcl_version' | tclsh)"
@@ -164,8 +153,14 @@ iscmd zsh       && echo "zsh        $(zsh --version)"
 echo
 
 iscmd asdf      && echo "asdf       $(asdf | head -1)"
-iscmd lein      && echo "lein       $(lein -v) [Clojure]"
+iscmd boot      && echo "boot       $(boot -V | grep BOOT_VERSION | cut -d= -f2)  (boot -u) [Clojure]"
+# install with $ wget https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein
+iscmd lein      && echo "lein       $(lein -v) [Clojure]  (lein upgrade) [Clojure]"
+iscmd ponyup    && echo "ponyup     $(ponyup version)"
+iscmd pyenv     && echo "pyenv      $(pyenv -v | cut -d' ' -f2)"
 iscmd sbt       && echo "sbt        $(sbt about|grep --color=never "This is sbt"|cut -d' ' -f4-5) [Scala]"
+iscmd sdk       && echo "sdk        $(sdk version | tr -d '\n'; echo)"
+# echo "sdk    $(sdk version | tr -d '\n')"
 echo
 
 iscmd bzr       && echo "bzr        $(bzr version | head -1)"
@@ -175,4 +170,7 @@ iscmd fossil    && echo "fossil     $(fossil version)"
 iscmd git       && echo "git        $(git version)"
 iscmd hg        && echo "hg         $(hg version | head -1)"
 iscmd svn       && echo "svn        $(svn --version | head -1)"
+echo
+
+iscmd tup       && echo "tup        $(tup -v)  (~/src/tup git pull; ./tup)"
 echo
