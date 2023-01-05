@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Small helper script for pipx-check-all, can be run standalone by supplying name of a pipx installed tool.
-echo "Outdated packages in pipx package $1 ==============================="
-pipx runpip "$1" list -o | egrep -v "^(pip|setuptools) "
-echo ""
+# echo "Outdated packages in pipx package $1 ==============================="
+# pipx runpip "$1" list -o | egrep -v "^(pip|setuptools) "
+# echo ""
+pipx runpip "$1" list -o | egrep -i "$1 "

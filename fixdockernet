@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+labnets="172.18.0.0/15 172.28.0.0/15"
+
+default_gw=$(ip route show 0.0.0.0/0 | head -1 | awk '{print $3}')
+default_intf=$(ip route show 0.0.0.0/0 | head -1 | awk '{print $5}')
+
+echo "Before ----------"
+ip route show | sed -E 's#172.[12]8.0.0/15.*#\x1b[33m&\x1b[0m#'
+for net in $labnets; do
+    # check if route for this network already exists
+    route=$(ip route show $net)
+    # if there is a route already, delete it
+    [[ -n $route ]] && sudo ip route del $route
+    # create new static route
+    sudo ip route add $net via $default_gw dev $default_intf
+done
+echo "After ----------"
+ip route show | sed -E 's#172.[12]8.0.0/15.*#\x1b[33m&\x1b[0m#'

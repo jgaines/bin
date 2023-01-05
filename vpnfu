@@ -6,3 +6,5 @@ sudo openconnect \
     --pid-file=/var/run/openconnect.pid \
     --background \
     annarbor.netscout.com
+#    westford.netscout.com
+#    sslvpn.netscout.com

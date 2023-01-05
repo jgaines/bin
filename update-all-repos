@@ -44,7 +44,7 @@ for REPO in $( find ~/git -name .git -exec dirname \{\} \; ); do
             NUM_CHANGES=$( echo $CHANGES | wc -w )
             if [ $NUM_CHANGES -eq 0 ]; then
                 echo "CLEAN: $REPO"
-                ${dry_run} git pull --rebase=preserve
+                ${dry_run} git pull --rebase=merges
                 clean="$clean:  $REPO"
             else
                 echo "CHANGES: $REPO"

@@ -1,8 +1,8 @@
 #!/bin/bash
 # Small script to show load and free memory on docker01-05.
-for n in 01 02 03 04 05 06
+for n in 01 02 03 04 05 06 07
 do
   echo "========= docker$n =========="
-  ssh docker$n "docker --version ; uptime ; free -hm ; df -h /data"
+  ssh docker$n.eng.arbor.net "docker --version ; uptime ; free -hm ; df -h /data"
   echo ""
 done

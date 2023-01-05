@@ -1,4 +1,6 @@
-#!/usr/bin/env python
+#!/bin/bash
+"exec" "$(pyenv prefix mybin)/bin/python" "$0" "$@"
+
 """Simple program to verify Python requirements are available in current environment.
 
 To use, simply run this program within the context of the python you want to check.
@@ -7,7 +9,7 @@ Initial idea came from:
 
 https://stackoverflow.com/questions/16294819/check-if-my-python-has-all-required-packages
 """
-from __future__ import print_function
+# from __future__ import print_function
 
 import argparse
 import os
@@ -81,7 +83,7 @@ def manage_errors(errors, error):
 
 def main(argv=sys.argv[1:]):
     args = parse_args(argv)
-    requirements = load_requirements(args.requirements_files)
+    requirements = [r for r in load_requirements(args.requirements_files) if r[0] != '-']
     if args.verbose:
         print("Checking individual requirements: {}.".format(", ".join(requirements)))
     errors = set()
