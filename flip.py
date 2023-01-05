@@ -1,4 +1,4 @@
-#! /home/jgaines/vpy/mybin/bin/python
+#! $(pyenv prefix mybin)/bin/python
 """Flip between eng-tools and administrator directories.
 
 Future Enhancements:
@@ -19,7 +19,7 @@ needs to figure out what shell it's running under, where the goto.py
 script lives and the proper python to run under.  It would then send
 the following to stdout:
 
-function goto {
+function flip {
     ~/bin/flip.py $*
     if [ $? == 0 ]
     then
