@@ -2,5 +2,14 @@
 # Small helper script for pipx-check-all, can be run standalone by supplying name of a pipx installed tool.
 # echo "Outdated packages in pipx package $1 ==============================="
 # pipx runpip "$1" list -o | egrep -v "^(pip|setuptools) "
-# echo ""
-pipx runpip "$1" list -o | egrep -i "$1 "
+# echo "
+# TODO: Look into using http://www.oilshell.org/blog/2021/08/xargs.html
+#       to roll this script into the main pipx-check-all as a function.
+set -o errexit
+set -o nounset
+set -o pipefail
+if [[ "${TRACE-0}" == "1" ]]; then
+    set -o xtrace
+fi
+
+pipx runpip "$1" list -o | grep -i "\<$1/>"

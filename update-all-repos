@@ -1,4 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+set -o errexit
+set -o nounset
+set -o pipefail
+if [[ "${TRACE-0}" == "1" ]]; then
+    set -o xtrace
+fi
 
 START_DIR=$(pwd)
 extra=0
@@ -33,7 +40,7 @@ changed=
 branched=
 
 for REPO in $( find ~/git -name .git -exec dirname \{\} \; ); do
-    cd $REPO
+    cd "$REPO" || continue
     REMOTE=$(git remote -v)
     BRANCH=$( git branch | grep '*' | cut -d' ' -f2 )
     if [ -z "$REMOTE" ]; then
@@ -41,14 +48,14 @@ for REPO in $( find ~/git -name .git -exec dirname \{\} \; ); do
     else
         if [ "$BRANCH" = "master" ]; then
             CHANGES=$( git status --porcelain | grep -v '??' )
-            NUM_CHANGES=$( echo $CHANGES | wc -w )
-            if [ $NUM_CHANGES -eq 0 ]; then
+            NUM_CHANGES=$( echo "$CHANGES" | wc -w )
+            if [ "$NUM_CHANGES" -eq 0 ]; then
                 echo "CLEAN: $REPO"
                 ${dry_run} git pull --rebase=merges
                 clean="$clean:  $REPO"
             else
                 echo "CHANGES: $REPO"
-                [ $extra -eq 1 ] && echo $CHANGES
+                [ $extra -eq 1 ] && echo "$CHANGES"
                 [ $extra -eq 1 ] && echo '------------------------------'
                 changed="$changed:  $REPO"
             fi
@@ -57,7 +64,7 @@ for REPO in $( find ~/git -name .git -exec dirname \{\} \; ); do
             branched="$branched:  $REPO"
         fi
     fi
-    cd $START_DIR
+    cd "$START_DIR"
 done
 
 if [ -z "$dry_run" ]; then

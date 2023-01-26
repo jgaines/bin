@@ -1,6 +1,11 @@
 #!/bin/bash
 # Small script to show apps running on docker-ma01-07.
-for n in ma01.eng ma02.eng ma03.eng ma04.eng ma05.eng ma06.eng ma07.eng aa01.eng aalab-01.tb
+# TODO: Replace the static list with an external script (so it can be called
+# from dockerload and dockerver) that returns a list of the current
+# docker-application hosts from Ansible:
+#    ansible --list-hosts -o 'docker-application-*'
+# Send through awk or something it parse out the bits before arbor.net
+for n in ma01.eng ma02.eng ma03.eng ma04.eng ma05.eng ma06.eng ma07.eng aa01.eng aalab-01.tb docker-tb2.vm
 do
   echo "========= docker-$n =========="
   ssh docker-$n.arbor.net "ls -F | grep /"

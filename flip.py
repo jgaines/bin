@@ -1,4 +1,3 @@
-#! $(pyenv prefix mybin)/bin/python
 """Flip between eng-tools and administrator directories.
 
 Future Enhancements:
@@ -14,7 +13,7 @@ line like:
 
     source $(python /path/to/flip.py --shell)
 
-to your shell start up script.  And it could pull all the info it
+to your shell start-up script.  And it could pull all the info it
 needs to figure out what shell it's running under, where the goto.py
 script lives and the proper python to run under.  It would then send
 the following to stdout:
@@ -47,7 +46,7 @@ FLIPS = {
 }
 
 
-def load_config(name:str=None) -> Tuple[Dict[str, Any], Dict[str, List[str]]]:
+def load_config(name: str = None) -> Tuple[Dict[str, Any], Dict[str, List[str]]]:
     """Attempt to load config.
 
     Looks in the XDG config folders, for the first 'flip/flip.cfg' file.
@@ -122,6 +121,7 @@ def flip(_args):
     # other_parent = FLIP_FLOP.get(current_dir.parent.name, None)
     # while other_parent is None and current_dir
 
+    # TODO: The following is no longer true:
     # Because flip_flops is a defaultdict(list), it always returns other_parents,
     # which will be an empty list if current_dir.parent.name is not in other_parents.
     other_parents = flip_flops[current_dir.parent.name]

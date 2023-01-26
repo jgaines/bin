@@ -1,5 +1,11 @@
-#!/bin/bash
-
+#!/usr/bin/env bash
 # Small script to run 'pipsi upgrade' on all pipsi installed apps.
+
+set -o errexit
+set -o nounset
+set -o pipefail
+if [[ "${TRACE-0}" == "1" ]]; then
+    set -o xtrace
+fi
 
 pipsi list | grep : | cut -d' ' -f4- | tr -d '":' | tail +2 | xargs -n1 pipsi upgrade

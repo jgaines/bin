@@ -1,2 +1,11 @@
-#!/bin/bash
-exec git blame --line-porcelain $@ | sed -n 's/^author //p' | sort | uniq -c | sort -rn
+#!/usr/bin/env bash
+# Report git blame contributors sorted by most to least lines contributed.
+
+set -o errexit
+set -o nounset
+set -o pipefail
+if [[ "${TRACE-0}" == "1" ]]; then
+    set -o xtrace
+fi
+
+exec git blame --line-porcelain "$@" | sed -n 's/^author //p' | sort | uniq -c | sort -rn

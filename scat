@@ -1,11 +1,17 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+set -o errexit
+set -o nounset
+if [[ "${TRACE-0}" == "1" ]]; then
+    set -o xtrace
+fi
 
 # "source cat" cat a file with source highlighting
 # requires pygmentize python app to be installed
 
 if [ ! -t 0 ] ; then
 	file=/dev/stdin
-elif [ -n "$1" -a -e "$1" ] ; then
+elif [[ -n "$1" && -e "$1" ]] ; then
 	file=$1
 	shift
 else
@@ -17,4 +23,4 @@ else
 	exit 1
 fi
 
-pygmentize -f terminal256 -O style=monokai -g $@ $file
+pygmentize -f terminal256 -O style=monokai -g "$@" "$file"

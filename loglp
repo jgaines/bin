@@ -1,6 +1,10 @@
 #!/bin/sh
 # Small script to log print requests rather than print them.
 # Execute 'loglp help' for more details (or just read further).
+# It assumes that the directory it's running is in the path
+# before the system bin as it works by symlinking itself to lp.
+# For future self: I'm pretty sure I wrote this at Severstal to
+# aid in testing code that was making lp calls to print files.
 logfile=~/lp.log
 case "$1" in
 on)
