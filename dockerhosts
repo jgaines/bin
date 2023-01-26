@@ -1,0 +1,13 @@
+#!/bin/bash
+# Small script to pull docker application servers from ansible.
+
+set -o errexit
+set -o nounset
+set -o pipefail
+if [[ "${TRACE-0}" == "1" ]]; then
+    set -o xtrace
+fi
+
+pushd $HOME/git/eng-tools/ansible >/dev/null
+ansible --list-hosts -o 'docker-application-*' 2>/dev/null | grep -F 'arbor.net' | tr -d ' '
+popd >/dev/null

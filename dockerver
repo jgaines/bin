@@ -1,8 +1,16 @@
 #!/bin/bash
-# Small script to show Docker/docker-compose versions on docker01-05.
-for n in 01 02 03 04 05 06 07
+# Small script to show Docker/docker-compose versions on docker application hosts.
+
+set -o errexit
+set -o nounset
+set -o pipefail
+if [[ "${TRACE-0}" == "1" ]]; then
+    set -o xtrace
+fi
+
+for n in $(dockerhosts)
 do
-  echo "========= docker$n =========="
-  ssh docker$n.eng.arbor.net "docker --version ; echo ; docker-compose version"
+  echo "========= $n =========="
+  ssh $n "docker --version ; echo ; docker-compose version" || true
   echo ""
 done

@@ -1,8 +1,16 @@
-#!/bin/bash
+#! /usr/bin/env bash
 # Small script to show load and free memory on docker01-05.
-for n in 01 02 03 04 05 06 07
+
+set -o errexit
+set -o nounset
+set -o pipefail
+if [[ "${TRACE-0}" == "1" ]]; then
+    set -o xtrace
+fi
+
+for n in $(dockerhosts)
 do
-  echo "========= docker$n =========="
-  ssh docker$n.eng.arbor.net "docker --version ; uptime ; free -hm ; df -h /data"
+  echo "========= $n =========="
+  ssh $n "docker --version ; uptime ; free -hm ; df -h /data" || true
   echo ""
 done
