@@ -1,0 +1,48 @@
+#!/bin/bash
+
+set -o errexit
+#set -o nounset
+set -o pipefail
+if [[ "${TRACE-0}" == "1" ]]; then
+    set -o xtrace
+fi
+
+if [[ -z "$1" ]]; then
+    dryrun=
+else
+    case "$1" in
+    check|dry-run|--check|-n)
+        dryrun=-ni
+    ;;
+    help|--help|-h)
+        echo ""
+        echo "Usage: john-sync [--check]"
+        echo ""
+        echo "Synchronise local changes to john.eng.arbor.net"
+        echo ""
+        echo "Optionas:"
+        echo "  check  Dry run mode."
+        echo ""
+        exit
+    esac
+fi
+
+echo BIN
+rsync $dryrun --delete -azvHP -e "ssh -i $HOME/.ssh/id_rsa" \
+        --rsync-path="sudo rsync" \
+        $HOME/bin/* john.eng.arbor.net:bin/
+
+echo ZPREZTO
+rsync $dryrun -azvHP -e "ssh -i $HOME/.ssh/id_rsa" \
+        --rsync-path="sudo rsync" \
+        $HOME/.zprezto/* john.eng.arbor.net:.zprezto/
+
+echo GIT
+rsync $dryrun -azvHP -e "ssh -i $HOME/.ssh/id_rsa" \
+        --rsync-path="sudo rsync" \
+        $HOME/.git{config,ignore} john.eng.arbor.net:
+
+echo SSH
+rsync $dryrun -azvHP -e "ssh -i $HOME/.ssh/id_rsa" \
+        --rsync-path="sudo rsync" \
+        $HOME/.ssh/* john.eng.arbor.net:.ssh/

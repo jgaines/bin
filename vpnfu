@@ -1,10 +1,43 @@
 #!/bin/bash
+
+set -o errexit
+set -o nounset
+set -o pipefail
+if [[ "${TRACE-0}" == "1" ]]; then
+    set -o xtrace
+fi
+
+if [[ $# -eq 0 ]]; then
+    vpnsite=sslvpn.netscout.com
+else
+    case "$1" in
+    annarbor)
+        vpnsite=annarbor.netscout.com
+    ;;
+    westford)
+        vpnsite=westford.netscout.com
+    ;;
+    show|st|stat|status)
+        xinput list-props "$touchpad" | grep "Device Enabled"
+    ;;
+    help|--help|-h)
+        echo ""
+        echo "Usage: vpnfu [SITE]"
+        echo ""
+        echo "Connect to VPN."
+        echo ""
+        echo "Optional SITE:"
+        echo "  annarbor"
+        echo "  westford"
+        echo ""
+        exit
+    esac
+fi
+
 sudo openconnect \
     --csd-wrapper="$HOME/git/third-party/openconnect/trojans/csd-post.sh" \
     --authgroup=Tunnel-All-VPN \
     --user="$USER" \
     --pid-file=/var/run/openconnect.pid \
     --background \
-    annarbor.netscout.com
-#    westford.netscout.com
-#    sslvpn.netscout.com
+    $vpnsite
