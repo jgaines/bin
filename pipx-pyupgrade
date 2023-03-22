@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# 
+
+set -o errexit
+set -o nounset
+set -o pipefail
+if [[ "${TRACE-0}" == "1" ]]; then
+    set -o xtrace
+fi
+
+if [[ $# -lt 2 ]]; then
+    echo Usage: $(basename $0) [PYTHON-VERSION] [PACKAGE...]
+    echo ""
+    echo "Uninstalls and installs the pipx PACKAGE(s) using the specified Python"
+    echo "which is assumed to be an installed pyenv Python version."
+    exit 0
+fi
+
+pyver=$1
+shift
+
+if [[ -z $(pyenv prefix "$pyver") ]]; then
+    echo "pyenv prefix \"$pyver\" failed, check to make sure $1 is installed in pyenv."
+    exit 1
+fi
+
+while (( "$# ")); do
+    [[ -n "$(pipx runpip $1 list)" ]] && pipx uninstall "$1"
+    pipx install --python $(pyenv prefix "$pyver")/bin/python "$1"
+    shift
+done
