@@ -150,19 +150,20 @@ iscmd sbcl      && echo "SBCL       $(sbcl --version | cut -d' ' -f2)"
 iscmd slsh      && echo "slsh       $(slsh --version)"
 iscmd tclsh     && echo "tcl        $(echo 'puts $tcl_version' | tclsh)"
 iscmd zsh       && echo "zsh        $(zsh --version)"
-echo
 
+echo "-- language managers --"
 iscmd asdf      && echo "asdf       $(asdf | head -1)"
 iscmd boot      && echo "boot       $(boot -V | grep BOOT_VERSION | cut -d= -f2)  (boot -u) [Clojure]"
 # install with $ wget https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein
 iscmd lein      && echo "lein       $(lein -v) [Clojure]  (lein upgrade) [Clojure]"
 iscmd ponyup    && echo "ponyup     $(ponyup version)"
 iscmd pyenv     && echo "pyenv      $(pyenv -v | cut -d' ' -f2)"
+iscmd rtx       && echo "rtx        $(rtx version 2>/dev/null)"
 iscmd sbt       && echo "sbt        $(sbt about|grep --color=never "This is sbt"|cut -d' ' -f4-5) [Scala]"
 iscmd sdk       && echo "sdk        $(sdk version | tr -d '\n'; echo)"
 # echo "sdk    $(sdk version | tr -d '\n')"
-echo
 
+echo "-- SCMs --"
 iscmd bzr       && echo "bzr        $(bzr version | head -1)"
 iscmd cvs       && echo "cvs        $(cvs --version | grep client)"
 iscmd darcs     && echo "darcs      $(darcs --version)"

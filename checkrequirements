@@ -1,6 +1,4 @@
-#!/usr/bin/env bash
-"exec" "$(pyenv prefix mybin)/bin/python" "$0" "$@"
-
+#!/home/jgaines/bin/.venv/bin/python
 """Simple program to verify Python requirements are available in current environment.
 
 To use, simply run this program within the context of the python you want to check.
@@ -8,9 +6,6 @@ To use, simply run this program within the context of the python you want to che
 Initial idea came from:
 
 https://stackoverflow.com/questions/16294819/check-if-my-python-has-all-required-packages
-
-The weird exec gyrations after the hash-bang are to get rid of the need for an explicit
-reference to the mybin virtualenv, so if we upgrade it later it'll keep working.
 """
 # from __future__ import print_function
 

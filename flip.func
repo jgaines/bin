@@ -1,4 +1,4 @@
 # function to make flip.py work.  Should get absorbed into flip.py the same as goto.py does it.
 function flip {
-    "$(pyenv prefix mybin)/bin/python" ~/bin/flip.py $@ || [[ -e "$HOME/.flip_directory" ]] && cd `cat "$HOME/.flip_directory"`
+    "$HOME/bin/.venv/bin/python" ~/bin/flip.py $@ || [[ -e "$HOME/.flip_directory" ]] && cd `cat "$HOME/.flip_directory"`
 }

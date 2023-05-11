@@ -12,4 +12,4 @@ if [[ "${TRACE-0}" == "1" ]]; then
     set -o xtrace
 fi
 
-pipx runpip "$1" list -o | grep -i "\<$1/>"
+pipx runpip "$1" list -o | grep -Ei "^$1\s"
