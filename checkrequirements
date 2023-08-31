@@ -1,4 +1,4 @@
-#!/home/jgaines/bin/.venv/bin/python
+#! /bin/env python
 """Simple program to verify Python requirements are available in current environment.
 
 To use, simply run this program within the context of the python you want to check.
