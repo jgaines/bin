@@ -30,6 +30,7 @@ about is that it has to be a recent 3.x Python.
 | randpwz.func         | zsh function to randomly generate password                    |
 | scat                 | "source cat" cat file with source highlighting                |
 | showpath             | dump path out with one directory per line                     |
+| swarm                | start/stop local docker swarm and load secrets from ansible   |
 | start                | script I fire up to start up things                           |
 | touchpad             | script to enable/disable touchpad                             |
 | update-all-pipsi     | script to run "pipsi upgrade" on all pipsi installed apps     |

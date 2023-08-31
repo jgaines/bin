@@ -1,0 +1,64 @@
+#!/bin/bash
+# Script to start/stop local docker swarm and report state.
+
+# set -o errexit
+set -o nounset
+# set -o pipefail
+if [[ "${TRACE-0}" == "1" ]]; then
+    set -o xtrace
+fi
+
+verbose=false
+if [[ $# -gt 1 ]]; then
+    if [[ "$2" == "--verbose" || "$2" == "-v" ]]; then
+        verbose=true
+    fi
+    if [[ "$1" == "--verbose" || "$1" == "-v" ]]; then
+        verbose=true
+        shift
+    fi
+fi
+
+readonly swarm_state=$(docker info | grep Swarm: | cut -d':' -f2 | tr -d ' ')
+
+case "$1" in
+init|on|start)
+    if [[ "$swarm_state" == "inactive" ]]; then
+        docker swarm init
+
+        pushd "$HOME/git/eng-tools/ansible"
+        if [[ $? -eq 0 ]]; then
+            ansible-playbook setupdevswarmenv.yml --vault-password-file=~/.keys/.vaultpw.txt
+            popd
+        else
+            echo "Failed to cd to ansible repo."
+        fi
+    fi
+    [[ $verbose == "true" ]] && $0 status
+;;
+leave|off|stop)
+    if [[ "$swarm_state" == "active" ]]; then
+        docker swarm leave --force
+    fi
+    [[ $verbose == "true" ]] && $0 status
+;;
+help|-h|--help|"")
+	echo ""
+	echo "Usage: swarm [COMMAND] [-v|--verbose]"
+	echo ""
+	echo "Manage local Docker swarm."
+	echo ""
+	echo "Commands:"
+	echo "  help|-h|--help        shows this help"
+	echo "  init|on|start         init swarm and load secrets"
+	echo "  leave|off|stop        stop (leave) swarm"
+	echo "  st|stat|state|status  shows swarm status"
+    echo ""
+    echo "Options:"
+    echo "  -v|--verbose          Show swarm state after stop/start"
+	echo ""
+;;
+st|stat|state|status)
+    echo "Docker Swarm is $swarm_state."
+;;
+esac
