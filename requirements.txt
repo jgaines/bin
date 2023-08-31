@@ -1,0 +1,11 @@
+atomicwrites==1.4.1
+better-exceptions==0.3.3
+importlib-metadata==6.6.0
+ipdb==0.13.13
+more-itertools==9.1.0
+pipdeptree==2.9.0
+pylama-pylint==3.1.1
+PySnooper==1.1.1
+pytest-cov==4.1.0
+pyxdg==0.28
+xdg==6.0.0

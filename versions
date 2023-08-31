@@ -17,97 +17,23 @@ iscmd() {
     # fi
 }
 
-if iscmd erl
-then
-    ever=$(erl -version 2>&1 | tr -d "\r\n" | cut -c8-)
-    over=$(erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().' -noshell | tr -d '\"\r\n')
-    echo "Erlang    $ever (OTP $over)"
-    #echo "Erlang    $(erl -version 2>&1)"
-    #echo "          OTP version $(erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().' -noshell | tr -d '\"')"
-    echo "          $(which erl)"
-    echo "          Use kerl to manage multiple versions."
-    [ -z "$1" ] && echo
-else
-    echo "Erlang    (none installed)"
-    [ -z "$1" ] && echo
-fi
-
-if iscmd julia
-then
-    echo "Julia     $(julia -v 2>&1)"
-    echo "          $(which julia)"
-    [ -z "$1" ] && echo
-fi
-
-if iscmd node
-then
-    echo "Node.js   $(node -v 2>&1)"
-    echo "          $(which node)"
-    echo "          Use nvm to change."
-    [ -z "$1" ] && echo
-else
-    echo "Node.js   (none active)"
-    if [ -s "$HOME/.nvm/nvm.sh" ]
-    then
-	echo "          Use nvm to change."
-        [ -z "$1" ] && echo
-    else
-	echo "          Install nvm to manage Node.js"
-        [ -z "$1" ] && echo
-    fi
-fi
-
-if iscmd ocaml
-then
-    echo "Ocaml     $(ocaml -version 2>&1)"
-    echo "          $(which ocaml)"
-    # echo "          Installed with ocamlbrew (~/ocamlbrew/ocamlbrew -h)."
-    [ -z "$1" ] && echo
-else
-    echo "Ocaml     (none installed)"
-    [ -z "$1" ] && echo
-fi
-
-if iscmd perl
-then
-    echo "Perl      $(perl -e 'print $]')"
-    echo "          $(which perl)"
-    # echo "          Use perlbrew to change."
-    [ -z "$1" ] && echo
-fi
-
-if iscmd pure
-then
-    echo "Pure      $(pure --version|head -1|cut -d' ' -f2-)"
-    echo "          $(which pure)"
-    [ -z "$1" ] && echo
-fi
-
-if iscmd python
-then
-    echo "Python    $(python -V 2>&1)"
-    echo "          $(which python)"
-    # echo "          Use pyenv to change."
-    [ -z "$1" ] && echo
-fi
-
-if iscmd ruby
-then
-    echo "Ruby      $(ruby -v 2>&1)"
-    echo "          $(which ruby)"
-    [ -n "$RUBY_MANAGE" ] && echo "          $RUBY_MANAGE"
-    [ -z "$1" ] && echo
-fi
-
-if iscmd java
-then
-    echo "Java      $(java -version 2>&1 | head -1)"
-    [ -z "$1" ] && echo
-fi
+iscmd bun       && echo "bun        $(bun -v)  (rtx)"
+iscmd crystal   && echo "Crystal    $(crystal version | head -1 | cut -d' ' -f2-)  (rtx)"
+iscmd deno      && echo "deno       $(deno -V | cut -d' ' -f2)  (rtx)"
+iscmd java      && echo "Java       $(java -version 2>&1 | head -1)"
+iscmd julia     && echo "Julia      $(julia -v 2>&1 | cut -d' ' -f3)  (rtx)"
+iscmd nim       && echo "nim        $(nim -v 2>&1 | head -1 | cut -d' ' -f4)  (rtx)"
+iscmd node      && echo "Node.js    $(node -v 2>&1)  (rtx)"
+iscmd perl      && echo "Perl       $(perl -e 'print $]')  (rtx)"
+iscmd python    && echo "Python     $(python -V 2>&1 | cut -d' ' -f2)  (rtx)"
+iscmd raku      && echo "raku       $(raku -v | head -1 | cut -d' ' -f4)  (rtx)"
+iscmd ruby      && echo "Ruby       $(ruby -v 2>&1 | cut -d' ' -f2)  (rtx)"
+iscmd rustc     && echo "rust       $(rustc --version | cut -d' ' -f2-)  (rtx)"
+iscmd zig       && echo "zig        $(zig version)  (rtx)"
 
 [ -z "$1" ] && exit 0
 
-echo
+echo "-- more --"
 iscmd bash      && echo "Bash       $(bash --version | head -1)"
 iscmd bigloo    && echo "Bigloo     $(bigloo -version)"
 iscmd ceylon    && echo "Ceylon     $(ceylon -v)"
@@ -115,8 +41,18 @@ iscmd csc       && echo "Chicken    $(csc -version | grep Version)"
 iscmd clang     && echo "clang/LLVM $(clang --version | head -1)"
 iscmd ccl       && echo "Clozure    $(ccl --version)"
 iscmd clisp     && echo "CLISP      $(clisp --version | head -1)"
-iscmd crystal   && echo "Crystal    $(crystal version | head -1 | cut -d' ' -f2-)"
 iscmd elixir    && echo "Elixir     $(elixir -v | tail -1 | cut -d' ' -f2 )"
+if iscmd erl
+then
+    ever=$(erl -version 2>&1 | tr -d "\r\n" | cut -c8-)
+    over=$(erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().' -noshell | tr -d '\"\r\n')
+    echo "Erlang    $ever (OTP $over)  (rtx)"
+    #echo "Erlang    $(erl -version 2>&1)"
+    #echo "          OTP version $(erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().' -noshell | tr -d '\"')"
+    echo "          $(which erl)"
+    echo "          Use kerl to manage multiple versions."
+    [ -z "$1" ] && echo
+fi
 iscmd fan       && echo "Fantom     $(fan -version | grep fan.version | tr -d ' ' | cut -d: -f2)"
 iscmd frink     && echo "Frink      $(frink -v 2>&1)"
 iscmd fsharpc   && echo "F#         $(fsharpc --help | head -1)"
@@ -138,18 +74,33 @@ iscmd mirah     && echo "mirah      $(mirah -v 2>&1 | head -1) [looks dead]"
 # update with luarocks
 iscmd moon      && echo "moonscript $(moon -v)"
 iscmd neko      && echo "Neko       $(nekoc --help | head -1)"
-iscmd nim       && echo "nim        $(nim -v 2>&1 | head -1)  (choosenim update stable)"
 iscmd nuitka    && echo "Nuitka     $(nuitka --version | head -1)"
+if iscmd ocaml
+then
+    echo "Ocaml     $(ocaml -version 2>&1)   (rtx)"
+    echo "          $(which ocaml)"
+    [ -z "$1" ] && echo
+fi
 iscmd rock      && echo "ooc(rock)  $(rock -V)"
 iscmd ponyc     && echo "pony       $(ponyc -v | head -1)  (ponyup)"
 iscmd psc       && echo "PureScript $(psc --version)"
+if iscmd pure
+then
+    echo "Pure      $(pure --version|head -1|cut -d' ' -f2-)  (rtx)"
+    echo "          $(which pure)"
+    [ -z "$1" ] && echo
+fi
 iscmd pythonect && echo "pythonect  $(pythonect -V 2>&1)"
 iscmd racket    && echo "racket     $(racket -v)"
-iscmd rustc     && echo "rust       $(rustc --version)  (rustup update)"
 iscmd sbcl      && echo "SBCL       $(sbcl --version | cut -d' ' -f2)"
 iscmd slsh      && echo "slsh       $(slsh --version)"
 iscmd tclsh     && echo "tcl        $(echo 'puts $tcl_version' | tclsh)"
 iscmd zsh       && echo "zsh        $(zsh --version)"
+
+echo "-- package managers --"
+iscmd corral    && echo "corral     $(corral version | cut -d' ' -f2)  (ponyup)"
+iscmd npm       && echo "npm        $(npm version | grep npm | tr -d " '," | cut -d: -f2)  (comes with node so rtx)"
+iscmd zigmod    && echo "zigmod     $(zigmod version | cut -d' ' -f2-)  (rtx)"
 
 echo "-- language managers --"
 iscmd asdf      && echo "asdf       $(asdf | head -1)"
@@ -158,7 +109,7 @@ iscmd boot      && echo "boot       $(boot -V | grep BOOT_VERSION | cut -d= -f2)
 iscmd lein      && echo "lein       $(lein -v) [Clojure]  (lein upgrade) [Clojure]"
 iscmd ponyup    && echo "ponyup     $(ponyup version)"
 iscmd pyenv     && echo "pyenv      $(pyenv -v | cut -d' ' -f2)"
-iscmd rtx       && echo "rtx        $(rtx version 2>/dev/null)"
+iscmd rtx       && echo "rtx        $(rtx version 2>/dev/null)  (rtx self-update)"
 iscmd sbt       && echo "sbt        $(sbt about|grep --color=never "This is sbt"|cut -d' ' -f4-5) [Scala]"
 iscmd sdk       && echo "sdk        $(sdk version | tr -d '\n'; echo)"
 # echo "sdk    $(sdk version | tr -d '\n')"
@@ -171,7 +122,9 @@ iscmd fossil    && echo "fossil     $(fossil version)"
 iscmd git       && echo "git        $(git version)"
 iscmd hg        && echo "hg         $(hg version | head -1)"
 iscmd svn       && echo "svn        $(svn --version | head -1)"
-echo
 
+echo "-- random tools --"
+iscmd bat       && echo "bat        $(bat -V | cut -d' ' -f2-)  (dep-get install bat)"
 iscmd tup       && echo "tup        $(tup -v)  (~/src/tup git pull; ./tup)"
+iscmd pulsar    && echo "pulsar     $(pulsar -v | head -1 | cut -d: -f2 | tr -d ' ')  (dep-get install pulsar)"
 echo
