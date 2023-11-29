@@ -9,9 +9,11 @@ about is that it has to be a recent 3.x Python.
 | app                  | description                                                   |
 |:---------------------|:--------------------------------------------------------------|
 | checkrequirements    | check local virtualenv requirements                           |
+| dockerhosts          | list all docker hosts from ansible repo, used by following    |
 | dockerlist           | lists apps on docker hosts                                    |
 | dockerload           | shows Docker version and usage info for all docker hosts      |
 | dockerserver         | shows Docker and docker-compose versions on docker hosts      |
+| engt-permissions.sh  | spew out user and group rights assigned to ENGT repos         |
 | flip                 | function to flip between administrator and eng-tools folders  |
 | flip.func            | sourced script to create flip function                        |
 | flip.py              | python script to calculate the flipping                       |
@@ -23,6 +25,7 @@ about is that it has to be a recent 3.x Python.
 | injectqa.py          | inject qa lib into a virtualenv                               |
 | latest-*             | show installed and latest versions of a tool                  |
 | loglp                | script to log print requests rather than print them           |
+| make_rtx_toml.sh     | script to create .rtx.toml files until rtx does so natively   |
 | merge-zsh-history.sh | merge two zsh history files (used when moving to new machine) |
 | pipx-check-all       | check all pipx installed tools for updates (pip list -o)      |
 | pipx-pyupgrade       | force a python upgrade to a pipx managed tool                 |
