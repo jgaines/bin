@@ -51,7 +51,11 @@ for REPO in $( find ~/git -name .git -exec dirname \{\} \; ); do
             NUM_CHANGES=$( echo "$CHANGES" | wc -w )
             if [ "$NUM_CHANGES" -eq 0 ]; then
                 echo "CLEAN: $REPO"
-                ${dry_run} git pull --rebase=merges
+                if [[ ${dry_run} ]]; then
+                    echo 'git pull --rebase=merges || { git branch --set-upstream-to=origin/master master && git pull --rebase=merges; }'
+                else
+                    git pull --rebase=merges || { git branch --set-upstream-to=origin/master master && git pull --rebase=merges; }
+                fi
                 clean="$clean:  $REPO"
             else
                 echo "CHANGES: $REPO"
