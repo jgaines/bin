@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o nounset
+#set -o pipefail # kills the script if pipx-check-all returns nothing
+if [[ "${TRACE-0}" == "1" ]]; then
+    set -o xtrace
+fi
+
+oudated=$(pipx-check-all | cut -d' ' -f1)
+
+if [[ -z "$oudated" ]]; then
+    echo "No outdated packages found"
+    exit 0
+fi
+
+echo "Upgrade all outdated packages: $oudated"
+
+# Ask user for confirmation
+read -p "Continue (y/n)? " choice
+
+case "$choice" in
+    y|Y )
+        for package in $oudated; do
+            pipx upgrade "$package"
+        done
+        exit 0
+    ;;
+    n|N ) echo "No"; exit 0;;
+    * ) echo "Invalid answer"; exit 1;;
+esac

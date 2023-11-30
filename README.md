@@ -29,8 +29,10 @@ about is that it has to be a recent 3.x Python.
 | merge-zsh-history.sh | merge two zsh history files (used when moving to new machine) |
 | pipx-check-all       | check all pipx installed tools for updates (pip list -o)      |
 | pipx-pyupgrade       | force a python upgrade to a pipx managed tool                 |
+| pipx-upgrade-all     | upgrade all pipx managed tools                                |
 | randpw.func          | bash function to randomly generate password                   |
 | randpwz.func         | zsh function to randomly generate password                    |
+| removews             | remove all spaces/tabs from a file                            |
 | scat                 | "source cat" cat file with source highlighting                |
 | showpath             | dump path out with one directory per line                     |
 | swarm                | start/stop local docker swarm and load secrets from ansible   |
