@@ -1,11 +1,15 @@
 #!/bin/bash
 
+# This script starts up all the applications I use on a daily basis.
+# When remote, I have to connect to the vpn first and then run this script.
+
 LOG=~/.local/log/start.log
 
 mkdir -p "$(dirname $LOG)"
 
 date > "$LOG"
-cd ~/projects/wiki && bun run tiddlywiki arbor --listen port=9999 &>> $LOG &
+# Installed the wiki in bun, so have to run it in bun.
+cd ~/projects/wiki && nohup bun run tiddlywiki arbor --listen port=9999 &>> $LOG &
 # emacs --daemon &>> "$LOG" &
 # firefox &>> "$LOG" &
 flatpak run org.chromium.Chromium &>> "$LOG" &
