@@ -8,9 +8,25 @@ if [[ "${TRACE-0}" == "1" ]]; then
     set -o xtrace
 fi
 
+case "$1" in
+  -h|--help|help)
+    echo "Usage: $0 [--short|-s|short]"
+    echo "  --short|-s|short  Show only host: docker version"
+    exit 0
+    ;;
+  --short|-s|short)
+    SHORT=1
+    ;;
+esac
+
 for n in $(dockerhosts)
 do
-  echo "========= $n =========="
-  ssh $n "docker --version ; echo ; docker-compose version" || true
-  echo ""
+  if [[ -n "${SHORT-}" ]]; then
+    echo -n "$n: "
+    ssh $n docker --version  | cut -d' ' -f3 | tr -d ','
+  else
+    echo "========= $n =========="
+    ssh $n "docker --version ; echo ; docker-compose version" || true
+    echo ""
+  fi
 done

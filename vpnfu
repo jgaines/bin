@@ -40,4 +40,5 @@ sudo openconnect \
     --user="$USER" \
     --pid-file=/var/run/openconnect.pid \
     --background \
+    --useragent='AnyConnect-compatible OpenConnect VPN Agent' \
     $vpnsite

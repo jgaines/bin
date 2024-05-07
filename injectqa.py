@@ -18,4 +18,4 @@ else:
 
 if answer and answer[0] in 'yY':
     with qalib_pth.open('w') as pth:
-        pth.write("/home/jgaines/git/eng-tools/qa/pylib")
+        pth.write("/home/jgaines/git/qa-tools/qa/pylib")

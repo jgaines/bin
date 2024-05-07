@@ -5,6 +5,6 @@
 
 for e in "$@"; do
     echo "$e -> $(ldapsearch -x -H ldap://netscout.com -D svc-arbor-eng-ldap@netscout.com \
-               -w 'C?)5BYzfPW(?pM{T' -b 'DC=netscout,DC=com' \
+               -y ~/.ssh/ldap_bind_password -b 'DC=netscout,DC=com' \
                -s sub \(proxyAddresses="SMTP:$e"\) | grep sAMAccountName | cut -d' ' -f2)"
 done
