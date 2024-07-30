@@ -17,6 +17,8 @@ about is that it has to be a recent 3.x Python.
 | flip                 | function to flip between administrator and eng-tools folders  |
 | flip.func            | sourced script to create flip function                        |
 | flip.py              | python script to calculate the flipping                       |
+| git-configs          | print a list of all currently active git configs              |
+| git-who              | show who has touched a file in a git repo                     |
 | gohere               | update GOHOME to current directory, for Go language           |
 | goplay               | start up Go language godoc server                             |
 | goto                 | function to go to folders from partial prefix                 |
@@ -37,6 +39,7 @@ about is that it has to be a recent 3.x Python.
 | showpath             | dump path out with one directory per line                     |
 | swarm                | start/stop local docker swarm and load secrets from ansible   |
 | start                | script I fire up to start up things                           |
+| test.dockerignore.sh | test a .dockerignore file against a directory                 |
 | touchpad             | script to enable/disable touchpad                             |
 | update-all-pipsi     | script to run "pipsi upgrade" on all pipsi installed apps     |
 | update-all-repos     | script to run "git pull --rebase=preserve" in all git repos   |

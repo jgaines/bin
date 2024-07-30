@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Spit out a list of the currently active git config files
+
+set -o errexit
+set -o nounset
+set -o pipefail
+if [[ "${TRACE-0}" == "1" ]]; then
+    set -o xtrace
+fi
+
+exec git config -l --show-origin | cut -f1 | uniq
