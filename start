@@ -3,7 +3,8 @@
 # This script starts up all the applications I use on a daily basis.
 # When remote, I have to connect to the vpn first and then run this script.
 
-LOG=~/.local/log/start.log
+LOGDIR=~/.local/log
+LOG=$LOGDIR/start.log
 
 mkdir -p "$(dirname $LOG)"
 
@@ -30,11 +31,11 @@ signal-reset pycharmp &>> "$LOG" &
 if ip addr show tun0 &>> /dev/null; then
     echo "On VPN, not updating repos, mise or pipx." | tee -a "$LOG"
 else
-    echo "Not on VPN, updating repos." | tee -a "$LOG"
-    update-all-repos &> ~/Desktop/update-all-repos.txt &
-    echo "Updating mise." | tee -a "$LOG"
-    mise self-update -y &>> "$LOG" &
-    echo "Updating pipx." | tee -a "$LOG"
-    pipx upgrade-all &>> "$LOG" &
+    echo "Not on VPN, updating repos" | tee -a "$LOG"
+    update-all-repos &> $LOGDIR/update-all-repos.txt &
+    echo "  and updating mise" | tee -a "$LOG"
+    mise self-update -y &> $LOGDIR/mise-self-update.log &
+    echo "  and updating pipx" | tee -a "$LOG"
+    pipx upgrade-all &> $LOGDIR/pipx-upgrade-all.log &
 fi
 cd
