@@ -17,6 +17,7 @@ about is that it has to be a recent 3.x Python.
 | flip                 | function to flip between administrator and eng-tools folders  |
 | flip.func            | sourced script to create flip function                        |
 | flip.py              | python script to calculate the flipping                       |
+| git-authors          | show all authors in a git repo in pyproject.toml format       |
 | git-configs          | print a list of all currently active git configs              |
 | git-who              | show who has touched a file in a git repo                     |
 | gohere               | update GOHOME to current directory, for Go language           |
@@ -27,6 +28,8 @@ about is that it has to be a recent 3.x Python.
 | injectqa.py          | inject qa lib into a virtualenv                               |
 | latest-*             | show installed and latest versions of a tool                  |
 | loglp                | script to log print requests rather than print them           |
+| make-local-latest.sh | symlink all the latest tools in mise to ~/.local/latest       |
+| make_envrc.sh        | script to create .envrc files until uv does so natively       |
 | make_rtx_toml.sh     | script to create .rtx.toml files until rtx does so natively   |
 | merge-zsh-history.sh | merge two zsh history files (used when moving to new machine) |
 | pipx-check-all       | check all pipx installed tools for updates (pip list -o)      |

@@ -1,0 +1,59 @@
+#!/usr/bin/env python3
+"""Generate authors list in TOML format from git shortlog.
+
+My friend Gemini wrote this.  First attempt failed, got nice looking output, only
+is used the count of commits in place of name and first name in place of email.
+
+After a bit of prodding and manual fixing, I got it working with regexes.
+"""
+import re
+import subprocess
+from collections import namedtuple
+
+# Define a namedtuple to represent an author
+Author = namedtuple("Author", ["name", "email"])
+
+
+def git_shortlog_to_toml():
+    """
+    Executes `git shortlog -s -e` and converts the output to pyproject.toml format.
+
+    Returns:
+        A string containing the TOML representation of authors and emails.
+    """
+    # Execute the git command
+    try:
+        output = subprocess.check_output(["git", "shortlog", "-s", "-e"]).decode("utf-8")
+    except subprocess.CalledProcessError as e:
+        print(f"Error running git shortlog: {e}")
+        return ""
+
+    # Parse the output:
+    # 254  Charles Ulrich <charles.ulrich@netscout.com>
+    #   2  Charles Ulrich <charles@arbor.net>
+    #   1  Charles Ulrich <charles@bityard.net>
+    #  637  Charles Ulrich <culrich@arbor.net>
+    #  15  Dean Draayer <ddraayer@arbor.net>
+    #   4  Dean Draayer <ddraayer@netscout.com>
+    #  29  Tommy Beadle <tbeadle@arbor.net>
+    regex = re.compile(r"\s*(\d+)\s+(.+?)\s+<(.+?)>")
+    authors = []
+    for line in output.splitlines():
+        match = regex.match(line)
+        if match:
+            _count, name, email = match.groups()
+            authors.append(Author(name.strip(), f"{email}".strip()))
+        else:
+            print(f"Failed to parse line: {line}")
+
+    # Convert authors to TOML
+    toml_data = "[{}\n]".format(",\n".join([f'{{ name = "{author.name}", email = "{author.email}" }}' for author in authors]))
+    return toml_data
+
+
+if __name__ == "__main__":
+    toml_output = git_shortlog_to_toml()
+    if toml_output:
+        print(toml_output)
+    else:
+        print("Failed to generate TOML output.")
