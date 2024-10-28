@@ -28,10 +28,11 @@ about is that it has to be a recent 3.x Python.
 | injectqa.py          | inject qa lib into a virtualenv                               |
 | latest-*             | show installed and latest versions of a tool                  |
 | loglp                | script to log print requests rather than print them           |
-| make-local-latest.sh | symlink all the latest tools in mise to ~/.local/latest       |
+| make-local-latest.sh | symlink all the latest mise managed tools to ~/.local/latest  |
 | make_envrc.sh        | script to create .envrc files until uv does so natively       |
-| make_rtx_toml.sh     | script to create .rtx.toml files until rtx does so natively   |
+| make_mise_toml.sh    | script to create python .mise.toml files                      |
 | merge-zsh-history.sh | merge two zsh history files (used when moving to new machine) |
+| name_addr.sh         | do a name resolution lookup and print FQDN and IP address     |
 | pipx-check-all       | check all pipx installed tools for updates (pip list -o)      |
 | pipx-pyupgrade       | force a python upgrade to a pipx managed tool                 |
 | pipx-upgrade-all     | upgrade all pipx managed tools                                |
@@ -44,7 +45,6 @@ about is that it has to be a recent 3.x Python.
 | start                | script I fire up to start up things                           |
 | test.dockerignore.sh | test a .dockerignore file against a directory                 |
 | touchpad             | script to enable/disable touchpad                             |
-| update-all-pipsi     | script to run "pipsi upgrade" on all pipsi installed apps     |
 | update-all-repos     | script to run "git pull --rebase=preserve" in all git repos   |
 | update-kitty         | update my copy of kitty terminal tool                         |
 | vcat                 | cat a file with all comment-only and blank lines removed      |
