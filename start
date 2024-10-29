@@ -43,6 +43,9 @@ flatpak run org.zealdocs.Zeal &>> "$LOG" &
 echo Starting Obsidian. | tee -a "$LOG"
 ~/apps/Obsidian.AppImage &>> "$LOG" &
 
+echo Starting OpenSnitch UI. | tee -a "$LOG"
+sudo opensnitch-ui &>> "$LOG" &
+
 # If weren't not on the vpn, then update all repos in the background.
 if ip addr show tun0 &>> /dev/null; then
     echo "On VPN, not updating repos, mise or pipx." | tee -a "$LOG"

@@ -8,6 +8,7 @@ about is that it has to be a recent 3.x Python.
 
 | app                  | description                                                   |
 |:---------------------|:--------------------------------------------------------------|
+| changelog            | show the changelog for some apps I'm interested in            |
 | checkrequirements    | check local virtualenv requirements                           |
 | dockerhosts          | list all docker hosts from ansible repo, used by following    |
 | dockerlist           | lists apps on docker hosts                                    |
