@@ -9,20 +9,34 @@ if [[ "${TRACE-0}" == "1" ]]; then
     set -o xtrace
 fi
 
-# Dictionary of application names and their changelog URLs
-declare -A changelog_urls=(
-    ["kitty"]="https://sw.kovidgoyal.net/kitty/changelog"
-    ["mise"]="https://github.com/jdx/mise/releases"
-    ["python"]="https://docs.python.org/3/whatsnew/changelog.html"
-    ["ruff"]="https://github.com/astral-sh/ruff/blob/main/CHANGELOG.md"
-    ["uv"]="https://github.com/astral-sh/uv/blob/main/CHANGELOG.md"
-)
+# pick which list to use based on the script name
+if [[ "$(basename "$0")" == "releases" ]]; then
+    # Dictionary of application names and their releases URLs
+    declare -A app_urls=(
+        ["kitty"]="https://github.com/kovidgoyal/kitty/releases"
+        ["mise"]="https://github.com/jdx/mise/releases"
+        ["pony"]="https://github.com/ponylang/ponyc/releases"
+        ["python"]="https://www.python.org/download/releases/"
+        ["ruff"]="https://github.com/astral-sh/ruff/releases"
+        ["uv"]="https://github.com/astral-sh/uv/releases"
+    )
+else
+    # Dictionary of application names and their changelog URLs
+    declare -A app_urls=(
+        ["kitty"]="https://sw.kovidgoyal.net/kitty/changelog"
+        ["mise"]="https://github.com/jdx/mise/releases"
+        ["pony"]="https://github.com/ponylang/ponyc/blob/main/CHANGELOG.md"
+        ["python"]="https://docs.python.org/3/whatsnew/changelog.html"
+        ["ruff"]="https://github.com/astral-sh/ruff/blob/main/CHANGELOG.md"
+        ["uv"]="https://github.com/astral-sh/uv/blob/main/CHANGELOG.md"
+    )
+fi
 
 # Check if an application name was provided as an argument
 if [ "$#" -eq 0 ]; then
     echo "Usage: $0 <application_name>"
     echo "Available applications:"
-    for app in "${!changelog_urls[@]}"; do
+    for app in "${!app_urls[@]}"; do
         echo "  - $app"
     done
     exit 1
@@ -31,14 +45,14 @@ fi
 app_name="$1"
 
 # Check if the provided application name is valid
-if [[ ${changelog_urls[$app_name]} ]]; then
-    url="${changelog_urls[$app_name]}"
-    echo "Opening changelog for $app_name: $url"
+if [[ ${app_urls[$app_name]} ]]; then
+    url="${app_urls[$app_name]}"
+    echo "Opening $(basename "$0") for $app_name: $url"
     xdg-open "$url" &> /dev/null
 else
     echo "Invalid application name: $app_name"
     echo "Available applications:"
-    for app in "${!changelog_urls[@]}"; do
+    for app in "${!app_urls[@]}"; do
         echo "  - $app"
     done
 fi
