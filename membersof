@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+# Print out help if no arguments given.
+if [ -z "$1" ]; then
+    echo "Usage: $0 <group-name-pattern>"
+    echo "Print out member list of LDAP group(s) matching the given pattern."
+    echo "It prints out the DN of the group and the CN of each member."
+    echo "The lookup places a wildcard before the pattern, so you can use it to match any group ending with the pattern."
+    echo "Some times you get multiple groups, so best to run it with no filter afterward first to make sure you're just getting one group."
+    echo "The first example matches both SG.Arbor.EngTools and SG.Infoblox.EngTools."
+    echo "The second example matches only SG.Arbor.EngTools."
+    echo ""
+    echo "Example: $0 EngTools"
+    echo "         $0 r.EngTools"
+    exit 1
+fi
+
+ldapsearch -NLLLoldif-wrap=no -x -H ldaps://arb-ldap.eng.netscout.com -D jgaines@netscout.com -y ~/.ssh/bad \
+    -b 'DC=netscout,DC=com' \
+    "(&(cn=*$1)(objectclass=Group))" | grep -E '(dn|member):'
