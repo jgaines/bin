@@ -46,17 +46,35 @@ echo Starting Obsidian. | tee -a "$LOG"
 echo Starting OpenSnitch UI. | tee -a "$LOG"
 sudo opensnitch-ui &>> "$LOG" &
 
-# If weren't not on the vpn, then update all repos in the background.
+# If weren't not on the vpn, then update stuff in the background.
 if ip addr show tun0 &>> /dev/null; then
     echo "On VPN, not updating repos, mise or pipx." | tee -a "$LOG"
 else
     echo "Not on VPN, updating repos" | tee -a "$LOG"
     update-all-repos &> $LOGDIR/update-all-repos.txt &
-    echo "  and updating mise managed tools" | tee -a "$LOG"
+    echo "  and updating brew and managed tools" | tee -a "$LOG"
+    morning-brew.sh &> $LOGDIR/brew-upgrade.log &
+    echo "  and updating mise and managed tools" | tee -a "$LOG"
     mise self-update -y &> $LOGDIR/mise-self-update.log &
-    echo "  and updating uv tool managed tools" | tee -a "$LOG"
+    echo "  and updating uv managed tools" | tee -a "$LOG"
     uv tool upgrade --all &> $LOGDIR/uv-tool-upgrade.log &
     echo "  and updating pipx managed tools" | tee -a "$LOG"
     pipx upgrade-all &> $LOGDIR/pipx-upgrade-all.log &
+    echo "  and updating cargo managed tools" | tee -a "$LOG"
+    cargo install-update -a &> $LOGDIR/cargo-install-update.log &
+    # If rust was upgraded use the install-cargo-binstall.sh script to restore cargo managed apps.
 fi
 cd
+
+# Check if the file at ~/.config/$USER/crates-v1.json has 2 hard links
+CRATES_FILE="$HOME/.config/$USER/crates-v1.json"
+if [ -e "$CRATES_FILE" ]; then
+    LINK_COUNT=$(stat -c %h "$CRATES_FILE")
+    if [ "$LINK_COUNT" -eq 2 ]; then
+        echo "The file $CRATES_FILE has 2 hard links." | tee -a "$LOG"
+    else
+        echo "The file $CRATES_FILE does not have 2 hard links. It has $LINK_COUNT hard links." | tee -a "$LOG"
+    fi
+else
+    echo "The file $CRATES_FILE does not exist." | tee -a "$LOG"
+fi
