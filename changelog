@@ -3,7 +3,7 @@
 # web browser.  Mostly written by my friend Gemini.
 
 set -o errexit
-set -o nounset
+# set -o nounset
 set -o pipefail
 if [[ "${TRACE-0}" == "1" ]]; then
     set -o xtrace
@@ -17,20 +17,24 @@ if [[ "$(basename "$0")" == "releases" ]]; then
         ["kitty"]="https://github.com/kovidgoyal/kitty/releases"
         ["mise"]="https://github.com/jdx/mise/releases"
         ["pony"]="https://github.com/ponylang/ponyc/releases"
-        ["python"]="https://www.python.org/download/releases/"
+        ["python"]="https://www.python.org/download/releases"
         ["ruff"]="https://github.com/astral-sh/ruff/releases"
         ["uv"]="https://github.com/astral-sh/uv/releases"
+        ["uv-migrator"]="https://github.com/stvnksslr/uv-migrator/releases"
+        ["werk"]="https://github.com/simonask/werk"
     )
 else
     # Dictionary of application names and their changelog URLs
     declare -A app_urls=(
-        ["just"]="https://github.com/casey/just/releases"
+        ["just"]="https://github.com/casey/just/blob/master/CHANGELOG.md"
         ["kitty"]="https://sw.kovidgoyal.net/kitty/changelog"
-        ["mise"]="https://github.com/jdx/mise/releases"
+        ["mise"]="https://github.com/jdx/mise/blob/main/CHANGELOG.md"
         ["pony"]="https://github.com/ponylang/ponyc/blob/main/CHANGELOG.md"
         ["python"]="https://docs.python.org/3/whatsnew/changelog.html"
         ["ruff"]="https://github.com/astral-sh/ruff/blob/main/CHANGELOG.md"
         ["uv"]="https://github.com/astral-sh/uv/blob/main/CHANGELOG.md"
+        ["uv-migrator"]="https://github.com/stvnksslr/uv-migrator/blob/main/CHANGELOG.md"
+        ["werk"]="https://github.com/simonask/werk"
     )
 fi
 
@@ -54,7 +58,7 @@ if [[ ${app_urls[$app_name]} ]]; then
 else
     echo "Invalid application name: $app_name"
     echo "Available applications:"
-    for app in "${!app_urls[@]}"; do
+    for app in $(echo "${!app_urls[@]}" | tr ' ' '\n' | sort); do
         echo "  - $app"
     done
 fi

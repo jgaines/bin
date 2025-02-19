@@ -37,12 +37,27 @@ rsync $dryrun -azvHP -e "ssh -i $HOME/.ssh/id_rsa" \
         --rsync-path="sudo rsync" \
         $HOME/.zprezto/* john.eng.arbor.net:.zprezto/
 
-echo GIT
+echo Select Configs from ~/.config
+rsync $dryrun -azvHP -e "ssh -i $HOME/.ssh/id_rsa" \
+        --rsync-path="sudo rsync" \
+        $HOME/.config/{bin,broot,mise,pip,ruff,thefuck,tlrc,uv,yazi,ripgrep} john.eng.arbor.net:.config/
+
+echo Custom starship prompt for john
+rsync $dryrun -azvHP -e "ssh -i $HOME/.ssh/id_rsa" \
+        --rsync-path="sudo rsync" \
+        $HOME/.config/starship.john.toml john.eng.arbor.net:.config/starship.toml
+
+echo Docker Config for logins
+rsync $dryrun -azvHP -e "ssh -i $HOME/.ssh/id_rsa" \
+        --rsync-path="sudo rsync" \
+        $HOME/.docker/config.json john.eng.arbor.net:.docker/
+
+echo GIT Configs
 rsync $dryrun -azvHP -e "ssh -i $HOME/.ssh/id_rsa" \
         --rsync-path="sudo rsync" \
         $HOME/.git{config,ignore} john.eng.arbor.net:
 
-echo SSH
+echo SSH Shit
 rsync $dryrun -azvHP -e "ssh -i $HOME/.ssh/id_rsa" \
         --rsync-path="sudo rsync" \
         $HOME/.ssh/* john.eng.arbor.net:.ssh/

@@ -36,7 +36,7 @@ import pathlib
 import sys
 from typing import Any, Dict, List, Tuple
 
-from xdg import BaseDirectory
+from xdg_base_dirs import xdg_config_home
 
 
 # This is a minimal default used if we can't find config file or a [flips]
@@ -66,12 +66,12 @@ def load_config(name: str = None) -> Tuple[Dict[str, Any], Dict[str, List[str]]]
     """
     options = dict()
     flips = dict()
+    cfg_home = xdg_config_home()
     config = None
-    for name in BaseDirectory.load_config_paths('flip'):
-        config_file = pathlib.Path(name) / 'flip.cfg'
-        if config_file.exists():
+    for name in (cfg_home / 'flip' / 'flip.cfg', cfg_home / 'flip.cfg'):
+        if name.exists():
             config = configparser.ConfigParser()
-            config.read(config_file)
+            config.read(name)
             break
     if config:
         if 'options' in config:

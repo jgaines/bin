@@ -10,7 +10,7 @@ fi
 rm -rf ~/.local/latest
 mkdir -p ~/.local/latest
 cd ~/.local/latest
-for d in ~/.local/share/mise/installs/*/latest; do
+for d in ~/.local/share/mise/installs/*/*latest; do
     # if there is a bin folder, symlink all the executables
     if [[ -d $d/bin ]]; then
         for f in $d/bin/*; do

@@ -1,0 +1,9 @@
+[project]
+name = "bin"
+version = "0.1.0"
+description = "My bin folder"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "xdg-base-dirs>=6.0.2",
+]

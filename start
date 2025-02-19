@@ -43,8 +43,8 @@ flatpak run org.zealdocs.Zeal &>> "$LOG" &
 echo Starting Obsidian. | tee -a "$LOG"
 ~/apps/Obsidian.AppImage &>> "$LOG" &
 
-echo Starting OpenSnitch UI. | tee -a "$LOG"
-sudo opensnitch-ui &>> "$LOG" &
+# echo Starting OpenSnitch UI. | tee -a "$LOG"
+# sudo opensnitch-ui &>> "$LOG" &
 
 # If weren't not on the vpn, then update stuff in the background.
 if ip addr show tun0 &>> /dev/null; then
@@ -64,6 +64,9 @@ else
     stty sane
     echo "  and updating pipx managed tools" | tee -a "$LOG"
     pipx upgrade-all &> $LOGDIR/pipx-upgrade-all.log &
+    stty sane
+    echo "  and checking for werk updates" | tee -a "$LOG"
+    update-werk.sh &> $LOGDIR/update-werk.log &
     stty sane
     # echo "  and updating cargo managed tools" | tee -a "$LOG"
     # cargo install-update -a &> $LOGDIR/cargo-install-update.log &
