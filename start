@@ -13,8 +13,8 @@ echo "Updating .local/latest (latest mise managed programs)" | tee -a "$LOG"
 ~/bin/make-local-latest.sh &>> "$LOG"
 
 # Installed the wiki in bun, so have to run it in bun.
-echo Starting tiddlywiki. | tee -a "$LOG"
-cd ~/projects/wiki && nohup bun run tiddlywiki arbor --listen port=9999 &>> $LOG &
+# echo Starting tiddlywiki. | tee -a "$LOG"
+# cd ~/projects/wiki && nohup bun run tiddlywiki arbor --listen port=9999 &>> $LOG &
 
 # emacs --daemon &>> "$LOG" &
 # firefox &>> "$LOG" &
@@ -67,6 +67,10 @@ else
     stty sane
     echo "  and checking for werk updates" | tee -a "$LOG"
     update-werk.sh &> $LOGDIR/update-werk.log &
+    stty sane
+    echo "  and updating soar and managed tools" | tee -a "$LOG"
+    soar self update &> $LOGDIR/soar-update.log &
+    soar update &>> $LOGDIR/soar-update.log &
     stty sane
     # echo "  and updating cargo managed tools" | tee -a "$LOG"
     # cargo install-update -a &> $LOGDIR/cargo-install-update.log &
