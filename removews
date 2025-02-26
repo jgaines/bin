@@ -1,2 +1,22 @@
 #!/bin/sh
+
+show_help() {
+    echo "Usage: removews [OPTION] FILE"
+    echo "Remove trailing whitespace from FILE."
+    echo
+    echo "Options:"
+    echo "  -h, --help    display this help and exit"
+}
+
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    show_help
+    exit 0
+fi
+
+if [ -z "$1" ]; then
+    echo "Error: No file specified."
+    show_help
+    exit 1
+fi
+
 sed -i 's/[ \t]*$//' "$1"

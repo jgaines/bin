@@ -14,11 +14,11 @@ else
     check|dry-run|--check|-n)
         dryrun=-ni
     ;;
-    help|--help|-h)
+help|--help|-h)
         echo ""
         echo "Usage: john-sync [--check]"
         echo ""
-        echo "Synchronise local changes to john.eng.arbor.net"
+        echo "Synchronise local changes to john.eng.netscout.com"
         echo ""
         echo "Optionas:"
         echo "  check  Dry run mode."
@@ -30,34 +30,34 @@ fi
 echo BIN
 rsync $dryrun --delete -azvHP -e "ssh -i $HOME/.ssh/id_rsa" \
         --rsync-path="sudo rsync" \
-        $HOME/bin/* john.eng.arbor.net:bin/
+        $HOME/bin/* john.eng.netscout.com:bin/
 
 echo ZPREZTO
 rsync $dryrun -azvHP -e "ssh -i $HOME/.ssh/id_rsa" \
         --rsync-path="sudo rsync" \
-        $HOME/.zprezto/* john.eng.arbor.net:.zprezto/
+        $HOME/.zprezto/* john.eng.netscout.com:.zprezto/
 
 echo Select Configs from ~/.config
 rsync $dryrun -azvHP -e "ssh -i $HOME/.ssh/id_rsa" \
         --rsync-path="sudo rsync" \
-        $HOME/.config/{bin,broot,mise,pip,ruff,thefuck,tlrc,uv,yazi,ripgrep} john.eng.arbor.net:.config/
+        $HOME/.config/{bin,broot,mise,pip,ruff,thefuck,tlrc,uv,yazi,ripgrep} john.eng.netscout.com:.config/
 
 echo Custom starship prompt for john
 rsync $dryrun -azvHP -e "ssh -i $HOME/.ssh/id_rsa" \
         --rsync-path="sudo rsync" \
-        $HOME/.config/starship.john.toml john.eng.arbor.net:.config/starship.toml
+        $HOME/.config/starship.john.toml john.eng.netscout.com:.config/starship.toml
 
 echo Docker Config for logins
 rsync $dryrun -azvHP -e "ssh -i $HOME/.ssh/id_rsa" \
         --rsync-path="sudo rsync" \
-        $HOME/.docker/config.json john.eng.arbor.net:.docker/
+        $HOME/.docker/config.json john.eng.netscout.com:.docker/
 
 echo GIT Configs
 rsync $dryrun -azvHP -e "ssh -i $HOME/.ssh/id_rsa" \
         --rsync-path="sudo rsync" \
-        $HOME/.git{config,ignore} john.eng.arbor.net:
+        $HOME/.git{config,ignore} john.eng.netscout.com:
 
 echo SSH Shit
 rsync $dryrun -azvHP -e "ssh -i $HOME/.ssh/id_rsa" \
         --rsync-path="sudo rsync" \
-        $HOME/.ssh/* john.eng.arbor.net:.ssh/
+        $HOME/.ssh/* john.eng.netscout.com:.ssh/

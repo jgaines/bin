@@ -27,6 +27,7 @@ really cares about is that it has to be a recent 3.x Python.
 | goto.func                 | shell script for goto function                                           |
 | goto.py                   | brains behind goto function                                              |
 | injectqa.py               | inject qa lib into a virtualenv                                          |
+| john-sync                 | synchronize select files to john.eng.netscout.com                        |
 | latest-*                  | show installed and latest versions of a tool                             |
 | loglp                     | script to log print requests rather than print them                      |
 | make-local-latest.sh      | symlink all the latest mise managed tools to ~/.local/latest             |
