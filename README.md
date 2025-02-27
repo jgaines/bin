@@ -34,7 +34,7 @@ really cares about is that it has to be a recent 3.x Python.
 | make_envrc.sh             | script to create .envrc files until uv does so natively                  |
 | make_mise_toml.sh         | script to create python .mise.toml files                                 |
 | merge-zsh-history.sh      | merge two zsh history files (used when moving to new machine)            |
-| morning-brew.sh           | script to update brew and brew managed tools                             |
+| morning-brew.sh           | script to update brew and brew managed tools (called by start)           |
 | name_addr.sh              | do a name resolution lookup and print FQDN and IP address                |
 | pipx-check-all            | check all pipx installed tools for updates (pip list -o)                 |
 | pipx-pyupgrade            | force a python upgrade to a pipx managed tool                            |
@@ -45,6 +45,7 @@ really cares about is that it has to be a recent 3.x Python.
 | removews                  | remove all spaces/tabs from a file                                       |
 | scat                      | cat file with source highlighting (I still use this occasionally)        |
 | showpath                  | dump path out with one directory per line                                |
+| soar_update.sh            | script to update soar and soar managed tools (called by start)           |
 | swarm                     | start/stop local docker swarm and load secrets from ansible              |
 | start                     | script I fire up to start up things                                      |
 | test.dockerignore.sh      | test a .dockerignore file against a directory                            |

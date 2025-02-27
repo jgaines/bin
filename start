@@ -69,8 +69,7 @@ else
     update-werk.sh &> $LOGDIR/update-werk.log &
     stty sane
     echo "  and updating soar and managed tools" | tee -a "$LOG"
-    soar self update &> $LOGDIR/soar-update.log &
-    soar update &>> $LOGDIR/soar-update.log &
+    soar_update.sh &> $LOGDIR/soar-update.log &
     stty sane
     # echo "  and updating cargo managed tools" | tee -a "$LOG"
     # cargo install-update -a &> $LOGDIR/cargo-install-update.log &
