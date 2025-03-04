@@ -13,6 +13,7 @@ fi
 if [[ "$(basename "$0")" == "releases" ]]; then
     # Dictionary of application names and their releases URLs
     declare -A app_urls=(
+        ["git-extras"]="https://github.com/tj/git-extras/releases"
         ["just"]="https://github.com/casey/just/releases"
         ["kitty"]="https://github.com/kovidgoyal/kitty/releases"
         ["mise"]="https://github.com/jdx/mise/releases"
@@ -27,6 +28,7 @@ if [[ "$(basename "$0")" == "releases" ]]; then
 else
     # Dictionary of application names and their changelog URLs
     declare -A app_urls=(
+        ["git-extras"]="https://github.com/tj/git-extras/blob/main/History.md"
         ["just"]="https://github.com/casey/just/blob/master/CHANGELOG.md"
         ["kitty"]="https://sw.kovidgoyal.net/kitty/changelog"
         ["mise"]="https://github.com/jdx/mise/blob/main/CHANGELOG.md"
@@ -44,7 +46,7 @@ fi
 if [ "$#" -eq 0 ]; then
     echo "Usage: $0 <application_name>"
     echo "Available applications:"
-    for app in "${!app_urls[@]}"; do
+    for app in $(echo "${!app_urls[@]}" | tr ' ' '\n' | sort); do
         echo "  - $app"
     done
     exit 1
