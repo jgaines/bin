@@ -1,2 +1,0 @@
-#!/bin/sh
-echo "Installed $(kak -version | cut -d' ' -f2 | cut -d- -f1), latest $(git -c 'versionsort.suffix=-' ls-remote --tags https://github.com/mawww/kakoune | grep -v '}' | tail -1 | cut -d/ -f3)"

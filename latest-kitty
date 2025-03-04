@@ -1,2 +1,0 @@
-#!/bin/sh
-echo "Installed v$(kitty -v | cut -d' ' -f2), latest $(git -c 'versionsort.suffix=-' ls-remote --tags --sort='v:refname' https://github.com/kovidgoyal/kitty | grep -v '}' | tail -1 | cut -d/ -f3)"

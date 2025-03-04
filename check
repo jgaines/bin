@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+# Script to check the current version of an app against the latest release.
+# A replacement for latest-kitty, latest-kak type scripts.  Part of a set of tools:
+#
+# check - to check the current version of an app against the latest release
+# changelog - to open the changelog of an app in the default web browser
+# releases - to open the releases page of an app in the default web browser
+# update - to update an app to the latest release
+
+set -o errexit
+set -o nounset
+set -o pipefail
+if [[ "${TRACE-0}" == "1" ]]; then
+    set -o xtrace
+fi
+
+# Check for the existence of a ~/.ssh/github_releases_token file
+if [ -f ~/.ssh/github_releases_token ]; then
+    GITHUB_TOKEN=$(cat ~/.ssh/github_releases_token)
+fi
+
+get_latest_release() {
+    local repo=$1
+    local release_data
+    local ver_tag
+
+    if [ -n "${GITHUB_TOKEN-}" ]; then
+        release_data=$(curl -s -H "Authorization: Bearer ${GITHUB_TOKEN}" "https://api.github.com/repos/${repo}/releases/latest")
+    else
+        release_data=$(curl -s "https://api.github.com/repos/${repo}/releases/latest")
+    fi
+    ver_tag=$(echo "$release_data" | jq -r '.tag_name')
+    ver_tag=${ver_tag#v}  # Remove leading 'v' if it exists
+
+    echo "$ver_tag"
+}
+
+# Dictionary of application names and their GitHub repos
+declare -A app_repos=(
+    ["git-extras"]="tj/git-extras"
+    ["just"]="casey/just"
+    ["kak"]="mawww/kakoune"
+    ["kitty"]="kovidgoyal/kitty"
+    ["mise"]="jdx/mise"
+    ["pony"]="ponylang/ponyc"
+    ["ruff"]="astral-sh/ruff"
+    ["soar"]="pkgforge/soar"
+    ["uv-migrator"]="stvnksslr/uv-migrator"
+    ["uv"]="astral-sh/uv"
+    ["werk"]="simonask/werk"
+)
+declare -A app_version_cmds=(
+    ["git-extras"]="git extras --version | cut -d' ' -f3"
+    ["just"]="just --version | cut -d' ' -f2"
+    ["kak"]="kak -version | cut -d' ' -f2 | cut -d'-' -f1 | tr -d 'v'"
+    ["kitty"]="kitty -v | cut -d' ' -f2"
+    ["mise"]="mise -v | grep -oP '\d{4}\.\d+\.\d+'"
+    ["pony"]="ponyc --version | head -n1 | cut -d'-' -f1"
+    ["ruff"]="ruff --version | cut -d' ' -f2"
+    ["soar"]="soar --version | cut -d' ' -f2"
+    ["uv-migrator"]="uv-migrator --version | cut -d' ' -f2"
+    ["uv"]="uv --version | cut -d' ' -f2"
+    ["werk"]="werk --version | cut -d' ' -f2"
+)
+
+# Check if an application name was provided as an argument
+if [ "$#" -eq 0 ]; then
+    echo "Usage: $0 <application_name>"
+    echo "Available applications:"
+    for app in $(echo "${!app_repos[@]}" | tr ' ' '\n' | sort); do
+        echo "  - $app"
+    done
+    exit -1
+fi
+# Check if the script is running in an interactive terminal
+if [ -t 1 ]; then
+    interactive=true
+else
+    interactive=false
+fi
+colorize_output() {
+    local app_name=$1
+    local app_version=$2
+    local latest_version=$3
+
+    if [ "$interactive" = true ] && [ "$app_version" != "$latest_version" ]; then
+        echo -e "Installed ${app_name} ${app_version}, latest \e[31m${latest_version}\e[0m"
+    else
+        echo "Installed ${app_name} ${app_version}, latest ${latest_version}"
+    fi
+}
+
+if [ "$1" == "all" ]; then
+    for app_name in $(echo "${!app_repos[@]}" | tr ' ' '\n' | sort); do
+        latest_version=$(get_latest_release "${app_repos[$app_name]}")
+        app_version=$(eval "${app_version_cmds[$app_name]}")
+        colorize_output "$app_name" "$app_version" "$latest_version"
+    done
+    exit 0
+fi
+app_name="$1"
+latest_version=$(get_latest_release "${app_repos[$app_name]}")
+app_version=$(eval "${app_version_cmds[$app_name]}")
+
+colorize_output "$app_name" "$app_version" "$latest_version"
+
+# exit with 0 if the installed version is the same as the latest version
+[ "$app_version" == "$latest_version" ]

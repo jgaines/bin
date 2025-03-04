@@ -51,7 +51,7 @@ if ip addr show tun0 &>> /dev/null; then
     echo "On VPN, not auto updating stuff." | tee -a "$LOG"
 else
     echo "Not on VPN, updating repos" | tee -a "$LOG"
-    update-all-repos &> $LOGDIR/update-all-repos.txt &
+    update-all-repos &> $LOGDIR/update-all-repos.log &
     stty sane
     echo "  and updating brew and managed tools" | tee -a "$LOG"
     morning-brew.sh &> $LOGDIR/brew-upgrade.log &
