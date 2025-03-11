@@ -9,6 +9,7 @@ really cares about is that it has to be a recent 3.x Python.
 | app                       | description                                                              |
 | :------------------------ | :----------------------------------------------------------------------- |
 | changelog                 | show the changelog for some apps I'm interested in                       |
+| check                     | show installed and latest versions of tools                              |
 | checkrequirements         | check local virtualenv requirements                                      |
 | dockerhosts               | list all docker hosts from ansible repo, used by following               |
 | dockerlist                | lists apps on docker hosts                                               |
@@ -28,7 +29,6 @@ really cares about is that it has to be a recent 3.x Python.
 | goto.py                   | brains behind goto function                                              |
 | injectqa.py               | inject qa lib into a virtualenv                                          |
 | john-sync                 | synchronize select files to john.eng.netscout.com                        |
-| latest-*                  | show installed and latest versions of a tool                             |
 | loglp                     | script to log print requests rather than print them                      |
 | make-local-latest.sh      | symlink all the latest mise managed tools to ~/.local/latest             |
 | make_envrc.sh             | script to create .envrc files until uv does so natively                  |
@@ -50,8 +50,8 @@ really cares about is that it has to be a recent 3.x Python.
 | start                     | script I fire up to start up things                                      |
 | test.dockerignore.sh      | test a .dockerignore file against a directory                            |
 | touchpad                  | script to enable/disable touchpad                                        |
+| update                    | script to update all managed tools (called by start)                     |
 | update-all-repos          | script to run "git pull --rebase=preserve" in all git repos              |
-| update-kitty              | update my copy of kitty terminal tool                                    |
 | vcat                      | cat a file with all comment-only and blank lines removed                 |
 | versions                  | script to print out various language/shell/tool versions                 |
 | vpnfu                     | script to connect to arbor (aa) vpn                                      |

@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# Script to update all the apps it knows about.
+# A replacement for update-kitty, update-werk, morning-brew.sh and
+# soar_update.sh scripts.  Part of a set of tools:
+#
+# check - to check the current version of an app against the latest release
+# changelog - to open the changelog of an app in the default web browser
+# releases - to open the releases page of an app in the default web browser
+# update - to update an app to the latest release
+
+set -o errexit
+set -o nounset
+set -o pipefail
+if [[ "${TRACE-0}" == "1" ]]; then
+    set -o xtrace
+fi
+
+# Dictionary of application names and the command to update them
+declare -A app_update_cmds=(
+    ["git-extras"]="git extras update"
+    ["just"]="mise up just"
+    ["kak"]="kak-update"
+    ["kitty"]='curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin'
+    ["mise"]="mise self-update"
+    ["pony"]="brew upgrade ponyc"
+    ["ruff"]="uv tool install ruff@latest"
+    ["soar"]='curl -fsSL https://soar.qaidvoid.dev/install.sh | sh'
+    ["uv-migrator"]="mise up cargo:uv-migrator"
+    ["uv"]="mise up aqua:astral-sh/uv"
+    ["werk"]="update-werk.sh"
+)
+
+# Check if an application name was provided as an argument
+if [ "$#" -eq 0 ]; then
+    echo "Usage: $0 <application_name>"
+    echo "Available applications:"
+    for app in $(echo "${!app_update_cmds[@]}" | tr ' ' '\n' | sort); do
+        echo "  - $app"
+    done
+    exit 0
+fi
+
+if [ "$1" == "all" ]; then
+    for app_name in $(echo "${!app_update_cmds[@]}" | tr ' ' '\n' | sort); do
+        eval "${app_update_cmds[$app_name]}"
+    done
+    exit 0
+fi
+
+# Check if the application name is known
+app_name="$1"
+if [ -z "${app_update_cmds[$app_name]:-}" ]; then
+    echo "Unknown application: $app_name"
+    exit 1
+fi
+
+# Update the application
+eval ${app_update_cmds[$app_name]}

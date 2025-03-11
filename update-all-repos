@@ -47,15 +47,15 @@ for REPO in $( find ~/git -name .git -exec dirname {} \; ); do
     if [ -z "$REMOTE" ]; then
         echo "NO REMOTE: $REPO"
     else
-        if [ "$BRANCH" = "master" ]; then
+        if [ "$BRANCH" = "master" ] || [ "$BRANCH" = "main" ]; then
             CHANGES=$( git status --porcelain | grep -v '??' )
             NUM_CHANGES=$( echo "$CHANGES" | wc -w )
             if [ "$NUM_CHANGES" -eq 0 ]; then
                 echo "CLEAN: $REPO"
                 if [[ -n ${dry_run} ]]; then
-                    echo 'git pull --rebase=merges || { git branch --set-upstream-to=origin/master master && git pull --rebase=merges; }'
+                    echo 'git pull --rebase=merges || { git branch --set-upstream-to=origin/$BRANCH $BRANCH && git pull --rebase=merges; }'
                 else
-                    git pull --rebase=merges || { git branch --set-upstream-to=origin/master master && git pull --rebase=merges; }
+                    git pull --rebase=merges || { git branch --set-upstream-to=origin/$BRANCH $BRANCH && git pull --rebase=merges; }
                 fi
                 clean="$clean:  $REPO"
             else
