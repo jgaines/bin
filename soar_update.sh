@@ -9,8 +9,6 @@ if [[ "${TRACE-0}" == "1" ]]; then
 fi
 
 # Until "soar self update" actually works, use my new check and update scripts:
-check soar
-if [ $? -eq 1 ]; then
-    update soar
-fi
+check soar || update soar
+
 soar update

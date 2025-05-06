@@ -71,6 +71,12 @@ else
     echo "  and updating soar and managed tools" | tee -a "$LOG"
     soar_update.sh &> $LOGDIR/soar-update.log &
     stty sane
+    echo "  and updating magic (mojo/max manager)" | tee -a "$LOG"
+    magic self-update &> $LOGDIR/magic-update.log &
+    stty sane
+    echo "  and updating zig/zls" | tee -a "$LOG"
+    ~/allmise/zigup.py &> $LOGDIR/zigup.log &
+    stty sane
     # echo "  and updating cargo managed tools" | tee -a "$LOG"
     # cargo install-update -a &> $LOGDIR/cargo-install-update.log &
     # stty sane

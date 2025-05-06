@@ -39,10 +39,12 @@ really cares about is that it has to be a recent 3.x Python.
 | pipx-check-all            | check all pipx installed tools for updates (pip list -o)                 |
 | pipx-pyupgrade            | force a python upgrade to a pipx managed tool                            |
 | pipx-upgrade-all          | upgrade all pipx managed tools                                           |
+| pyusage.py                | script to analyze python usage in projects                               |
 | randpw.func               | bash function to randomly generate password                              |
 | randpwz.func              | zsh function to randomly generate password                               |
 | releases                  | show the releases for some apps I'm interested in (symlink to changelog) |
 | removews                  | remove all spaces/tabs from a file                                       |
+| samaccountname            | script to look up sAMAccountName for one or more email addresses         |
 | scat                      | cat file with source highlighting (I still use this occasionally)        |
 | showpath                  | dump path out with one directory per line                                |
 | soar_update.sh            | script to update soar and soar managed tools (called by start)           |
@@ -52,6 +54,7 @@ really cares about is that it has to be a recent 3.x Python.
 | touchpad                  | script to enable/disable touchpad                                        |
 | update                    | script to update all managed tools (called by start)                     |
 | update-all-repos          | script to run "git pull --rebase=preserve" in all git repos              |
+| update-werk               | script to update werk (a WIP 'just' contender)                           |
 | vcat                      | cat a file with all comment-only and blank lines removed                 |
 | versions                  | script to print out various language/shell/tool versions                 |
 | vpnfu                     | script to connect to arbor (aa) vpn                                      |
