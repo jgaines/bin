@@ -21,6 +21,7 @@ from collections import defaultdict
 from os.path import expanduser
 from typing import cast
 
+
 def find_python_executables(directory: Path, ignore: list[str], verbose: int) -> dict[Path, Path]:
     """Find all Python executables in the given directory, ignoring specified folders."""
     python_files: dict[Path, Path] = {}
@@ -84,19 +85,48 @@ class MyArgs(argparse.Namespace):
     verbose: int = 0
 
 
+def version_key(version_str: str) -> list[float | int | str]:
+    """Create a key for sorting version strings properly."""
+    # Handle unknown or error versions
+    if version_str.startswith("Unknown") or version_str.startswith("Error"):
+        return [float("inf")]  # Place at the end
+
+    # Extract version numbers, handling both '3.10.2' and similar formats
+    try:
+        return [int(x) if x.isdigit() else x for x in version_str.split(".")]
+    except Exception:
+        return [version_str]  # Return as is if parsing fails
+
+
 def main():
-    parser = argparse.ArgumentParser(description="Analyze Python usage across projects", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    _ = parser.add_argument(
-        "projects", nargs="+", type=Path, help="Project root directories to analyze"
+    parser = argparse.ArgumentParser(
+        description="Analyze Python usage across projects", formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
+    _ = parser.add_argument("projects", nargs="+", type=Path, help="Project root directories to analyze")
     _ = parser.add_argument(
         "--ignore",
         nargs="*",
-        default=[".cache", ".coverage", ".git", ".idea", ".magic", ".mypy_cache", ".pytest_cache", ".tox", ".vscode", ".zed", "__pycache__"],
+        default=[
+            ".cache",
+            ".coverage",
+            ".git",
+            ".idea",
+            ".magic",
+            ".mypy_cache",
+            ".pytest_cache",
+            ".tox",
+            ".vscode",
+            ".zed",
+            "__pycache__",
+        ],
         help="Directories to ignore",
     )
     _ = parser.add_argument(
-        "-v", "--verbose", action="count", default=0, help="Increase verbosity level (use multiple times for more detail)"
+        "-v",
+        "--verbose",
+        action="count",
+        default=0,
+        help="Increase verbosity level (use multiple times for more detail)",
     )
     args: MyArgs = cast(MyArgs, parser.parse_args())
 
@@ -131,10 +161,14 @@ def main():
         print(f"\n{compact_project}: {len(results)} Python executables")
         if results:
             max_version_length = max(len(info["version"]) for info in results.values())
-            for file_path, info in results.items():
+
+            # Sort by resolved path
+            sorted_paths = sorted(results.items(), key=lambda x: x[1]["resolved"])
+
+            for file_path, info in sorted_paths:
                 compact_file_path = file_path.replace(home_dir, "~")
                 compact_resolved_path = info["resolved"].replace(home_dir, "~")
-                print(f"  {info['version']:<{max_version_length}} {compact_file_path} -> {compact_resolved_path}")
+                print(f"  {info['version']:<{max_version_length}} {compact_resolved_path} <- {compact_file_path}")
 
     print("\nSUMMARY")
     print("=" * 50)
@@ -143,7 +177,8 @@ def main():
 
     if version_count:
         print("\nVersion distribution:")
-        for version, count in sorted(version_count.items()):
+        # Sort by version numbers properly
+        for version, count in sorted(version_count.items(), key=lambda x: version_key(x[0])):
             print(f"  {version}: {count} files ({count / total_files * 100:.1f}%)")
 
 
