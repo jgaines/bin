@@ -8,17 +8,6 @@ LOG=$LOGDIR/start.log
 
 mkdir -p "$(dirname $LOG)"
 
-date > "$LOG"
-echo "Updating .local/latest (latest mise managed programs)" | tee -a "$LOG"
-~/bin/make-local-latest.sh &>> "$LOG"
-
-# Installed the wiki in bun, so have to run it in bun.
-# echo Starting tiddlywiki. | tee -a "$LOG"
-# cd ~/projects/wiki && nohup bun run tiddlywiki arbor --listen port=9999 &>> $LOG &
-
-# emacs --daemon &>> "$LOG" &
-# firefox &>> "$LOG" &
-
 echo Starting chromium. | tee -a "$LOG"
 flatpak run org.chromium.Chromium &>> "$LOG" &
 
@@ -27,24 +16,12 @@ flatpak run com.slack.Slack &>> "$LOG" &
 
 echo Starting webex. | tee -a "$LOG"
 /opt/Webex/bin/CiscoCollabHost jgaines &>> "$LOG" &
-# slack &>> "$LOG" &
-# exo-open --launch WebBrowser &>> "$LOG" &
-
-# echo Starting pycharm. | tee -a "$LOG"
-# signal-reset pycharmp &>> "$LOG" &
-
-# xfce4-terminal --tab --tab --tab &>> "$LOG"
-# edit -c &>> "$LOG" &
-# code /etc/hosts
 
 echo Starting zeal. | tee -a "$LOG"
 flatpak run org.zealdocs.Zeal &>> "$LOG" &
 
 echo Starting Obsidian. | tee -a "$LOG"
 ~/apps/Obsidian.AppImage &>> "$LOG" &
-
-# echo Starting OpenSnitch UI. | tee -a "$LOG"
-# sudo opensnitch-ui &>> "$LOG" &
 
 # If weren't not on the vpn, then update stuff in the background.
 if ip addr show tun0 &>> /dev/null; then
@@ -77,23 +54,14 @@ else
     echo "  and updating zig/zls" | tee -a "$LOG"
     ~/allmise/zigup.py &> $LOGDIR/zigup.log &
     stty sane
-    # echo "  and updating cargo managed tools" | tee -a "$LOG"
-    # cargo install-update -a &> $LOGDIR/cargo-install-update.log &
-    # stty sane
-    # If rust was upgraded use the install-cargo-binstall.sh script to restore cargo managed apps.
+    echo "  and updating lmd (maldet)" | tee -a "$LOG"
+    update-lmd -u &> $LOGDIR/lmd.log &
+    stty sane
 fi
+
+date > "$LOG"
+echo "Updating .local/latest (latest mise managed programs)" | tee -a "$LOG"
+(sleep 30 && ~/bin/make-local-latest.sh &>> "$LOG") &
+
 cd
 
-# Check if the file at ~/.config/$USER/crates-v1.json has 2 hard links
-
-# CRATES_FILE="$HOME/.config/$USER/crates-v1.json"
-# if [ -e "$CRATES_FILE" ]; then
-#     LINK_COUNT=$(stat -c %h "$CRATES_FILE")
-#     if [ "$LINK_COUNT" -eq 2 ]; then
-#         echo "The file $CRATES_FILE has 2 hard links." | tee -a "$LOG"
-#     else
-#         echo "The file $CRATES_FILE does not have 2 hard links. It has $LINK_COUNT hard links." | tee -a "$LOG"
-#     fi
-# else
-#     echo "The file $CRATES_FILE does not exist." | tee -a "$LOG"
-# fi

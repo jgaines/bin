@@ -1,0 +1,6 @@
+#!/bin/bash
+# Small script to sync setup between VSCode and VSCode Insiders
+
+meld '/home/jgaines/.config/Code/User/globalStorage/alefragnani.project-manager/projects.json' '/home/jgaines/.config/Code - Insiders/User/globalStorage/alefragnani.project-manager/projects.json'
+meld '/home/jgaines/.config/Code/User/keybindings.json' '/home/jgaines/.config/Code - Insiders/User/keybindings.json'
+meld '/home/jgaines/.config/Code/User/settings.json' '/home/jgaines/.config/Code - Insiders/User/settings.json'

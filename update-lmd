@@ -1,0 +1,5 @@
+#!/bin/bash
+# Update Linux Malware Detect (LMD) and its data.
+
+sudo maldet -d
+sudo maldet -u

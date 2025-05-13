@@ -61,3 +61,8 @@ echo SSH Shit
 rsync $dryrun -azvHP -e "ssh -i $HOME/.ssh/id_rsa" \
         --rsync-path="sudo rsync" \
         $HOME/.ssh/* john.eng.netscout.com:.ssh/
+
+echo All MISE       
+rsync $dryrun -azvHP -e "ssh -i $HOME/.ssh/id_rsa" \
+        --rsync-path="sudo rsync" \
+        $HOME/allmise/* john.eng.netscout.com:allmise/
