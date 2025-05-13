@@ -54,9 +54,9 @@ else
     echo "  and updating zig/zls" | tee -a "$LOG"
     ~/allmise/zigup.py &> $LOGDIR/zigup.log &
     stty sane
-    echo "  and updating lmd (maldet)" | tee -a "$LOG"
-    update-lmd -u &> $LOGDIR/lmd.log &
-    stty sane
+    # echo "  and updating lmd (maldet)" | tee -a "$LOG"
+    # update-lmd -u &> $LOGDIR/lmd.log &
+    # stty sane
 fi
 
 date > "$LOG"
