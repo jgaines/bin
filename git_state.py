@@ -37,6 +37,22 @@ def check_git_status(workspace_file, vscode_settings):
             print(f"Error reading {vscode_settings}: {e}")
             return None
 
+    # Check global VS Code settings
+    global_settings = os.path.expanduser('~/.config/Code/User/settings.json')
+    if os.path.exists(global_settings):
+        try:
+            with open(global_settings, 'r') as f:
+                data = json.load(f)
+                if 'git.enabled' in data:
+                    return ('global', data['git.enabled'])
+                else:
+                    return ('global', None)
+        except json.JSONDecodeError:
+            return ('global', None)
+        except Exception as e:
+            print(f"Error reading {global_settings}: {e}")
+            return None
+
     return None
 
 def report_git_status():
@@ -55,7 +71,7 @@ def report_git_status():
     
     file_type, git_enabled = status
     if git_enabled is None:
-        print(f"Found {file_type} file, but git.enabled setting is not configured.")
+        print(f"Found {file_type} file, but git.enabled setting is not configured (which means it is enabled).")
     else:
         print(f"Current git.enabled setting in {file_type} file is: {git_enabled}")
 
