@@ -1,54 +1,51 @@
 #!/usr/bin/env python3
 import json
-import os
 import sys
 import argparse
+from pathlib import Path
 
 def check_git_status(workspace_file, vscode_settings):
     """
     Checks the current status of git.enabled in workspace or settings file
     Returns a tuple of (file_type, status) or None if no relevant file found
     """
-    if os.path.exists(workspace_file):
+    if workspace_file.exists():
         try:
-            with open(workspace_file, 'r') as f:
-                data = json.load(f)
-                if 'settings' in data and 'git.enabled' in data['settings']:
-                    return ('workspace', data['settings']['git.enabled'])
-                else:
-                    return ('workspace', None)
+            data = json.loads(workspace_file.read_text())
+            if 'settings' in data and 'git.enabled' in data['settings']:
+                return (workspace_file.name, data['settings']['git.enabled'])
+            else:
+                return (workspace_file.name, None)
         except json.JSONDecodeError:
-            return ('workspace', None)
+            return (workspace_file.name, None)
         except Exception as e:
             print(f"Error reading {workspace_file}: {e}")
             return None
 
-    if os.path.exists(vscode_settings):
+    if vscode_settings.exists():
         try:
-            with open(vscode_settings, 'r') as f:
-                data = json.load(f)
-                if 'git.enabled' in data:
-                    return ('vscode', data['git.enabled'])
-                else:
-                    return ('vscode', None)
+            data = json.loads(vscode_settings.read_text())
+            if 'git.enabled' in data:
+                return ('.vscode/settings.json', data['git.enabled'])
+            else:
+                return ('.vscode/settings.json', None)
         except json.JSONDecodeError:
-            return ('vscode', None)
+            return ('.vscode/settings.json', None)
         except Exception as e:
             print(f"Error reading {vscode_settings}: {e}")
             return None
 
     # Check global VS Code settings
-    global_settings = os.path.expanduser('~/.config/Code/User/settings.json')
-    if os.path.exists(global_settings):
+    global_settings = Path.home() / '.config' / 'Code' / 'User' / 'settings.json'
+    if global_settings.exists():
         try:
-            with open(global_settings, 'r') as f:
-                data = json.load(f)
-                if 'git.enabled' in data:
-                    return ('global', data['git.enabled'])
-                else:
-                    return ('global', None)
+            data = json.loads(global_settings.read_text())
+            if 'git.enabled' in data:
+                return ('User settings', data['git.enabled'])
+            else:
+                return ('User settings', None)
         except json.JSONDecodeError:
-            return ('global', None)
+            return ('User settings', None)
         except Exception as e:
             print(f"Error reading {global_settings}: {e}")
             return None
@@ -59,11 +56,12 @@ def report_git_status():
     """
     Reports the current state of git.enabled setting
     """
-    current_dir = os.getcwd()
-    workspace_file = os.path.basename(current_dir) + ".code-workspace"
-    vscode_settings = '.vscode/settings.json'
+    current_dir = Path.cwd()
+    workspace_name = current_dir.name + ".code-workspace"
+    workspace_path = current_dir / workspace_name
+    vscode_settings = current_dir / '.vscode' / 'settings.json'
     
-    status = check_git_status(workspace_file, vscode_settings)
+    status = check_git_status(workspace_path, vscode_settings)
     
     if status is None:
         print("No .code-workspace or .vscode/settings.json file found.")
@@ -73,64 +71,56 @@ def report_git_status():
     if git_enabled is None:
         print(f"Found {file_type} file, but git.enabled setting is not configured (which means it is enabled).")
     else:
-        print(f"Current git.enabled setting in {file_type} file is: {git_enabled}")
+        print(f"Current git.enabled setting in {file_type} is: {git_enabled}")
 
 def set_git_enabled(value):
     """
     Sets git.enabled to the specified value (True or False)
     """
-    current_dir = os.getcwd()
-    workspace_file = os.path.basename(current_dir) + ".code-workspace"
-    vscode_settings = '.vscode/settings.json'
+    current_dir = Path.cwd()
+    workspace_name = current_dir.name + ".code-workspace"
+    workspace_file = current_dir / workspace_name
+    vscode_settings = current_dir / '.vscode' / 'settings.json'
     
     action_text = "enabled" if value else "disabled"
     
     # Try to set the value in the workspace file first
     try:
-        with open(workspace_file, 'r+') as f:
-            try:
-                data = json.load(f)
-            except json.JSONDecodeError:
-                data = {}  # Handle empty or invalid JSON
+        if workspace_file.exists():
+            data = json.loads(workspace_file.read_text())
+        else:
+            data = {}
+            
+        if 'settings' not in data:
+            data['settings'] = {}
 
-            if 'settings' not in data:
-                data['settings'] = {}
+        data['settings']['git.enabled'] = value
 
-            data['settings']['git.enabled'] = value
+        workspace_file.write_text(json.dumps(data, indent=4))
+        print(f"Successfully set 'git.enabled': {value} in {workspace_file.name}")
 
-            f.seek(0)  # Go back to the beginning of the file
-            json.dump(data, f, indent=4)
-            f.truncate()  # Remove any remaining content if the new data is shorter
-
-            print(f"Successfully set 'git.enabled': {value} in {workspace_file}")
-
-    except FileNotFoundError:
+    except Exception as e:
         try:
             # Ensure .vscode directory exists
-            os.makedirs(os.path.dirname(vscode_settings), exist_ok=True)
+            vscode_dir = vscode_settings.parent
+            vscode_dir.mkdir(exist_ok=True, parents=True)
             
-            # Try to open the file for reading and writing, or create it if it doesn't exist
+            # Try to read existing settings or create new ones
             try:
-                with open(vscode_settings, 'r') as f:
-                    try:
-                        data = json.load(f)
-                    except json.JSONDecodeError:
-                        data = {}
-            except FileNotFoundError:
+                if vscode_settings.exists():
+                    data = json.loads(vscode_settings.read_text())
+                else:
+                    data = {}
+            except json.JSONDecodeError:
                 data = {}
                 
             data['git.enabled'] = value
             
-            with open(vscode_settings, 'w') as f:
-                json.dump(data, f, indent=4)
-                
-            print(f"Successfully set 'git.enabled': {value} in {vscode_settings}")
+            vscode_settings.write_text(json.dumps(data, indent=4))
+            print(f"Successfully set 'git.enabled': {value} in {vscode_settings.relative_to(current_dir)}")
         except Exception as e:
             print(f"An error occurred while updating VSCode settings: {e}")
             sys.exit(1)
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        sys.exit(1)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Check or change git integration in VS Code")
