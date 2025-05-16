@@ -39,11 +39,9 @@ def check_git_status(workspace_file, vscode_settings):
 
     return None
 
-def inject_disable_git(set_value=None):
+def report_git_status():
     """
-    Reads workspace/settings files and reports the current git.enabled status.
-    If set_value is provided (True or False), sets git.enabled to that value.
-    Otherwise, just reports the current status.
+    Reports the current state of git.enabled setting
     """
     current_dir = os.getcwd()
     workspace_file = os.path.basename(current_dir) + ".code-workspace"
@@ -51,21 +49,25 @@ def inject_disable_git(set_value=None):
     
     status = check_git_status(workspace_file, vscode_settings)
     
-    # If set_value is None, just report current status
-    if set_value is None:
-        if status is None:
-            print("No .code-workspace or .vscode/settings.json file found.")
-            return
-        
-        file_type, git_enabled = status
-        if git_enabled is None:
-            print(f"Found {file_type} file, but git.enabled setting is not configured.")
-        else:
-            print(f"Current git.enabled setting in {file_type} file is: {git_enabled}")
+    if status is None:
+        print("No .code-workspace or .vscode/settings.json file found.")
         return
+    
+    file_type, git_enabled = status
+    if git_enabled is None:
+        print(f"Found {file_type} file, but git.enabled setting is not configured.")
+    else:
+        print(f"Current git.enabled setting in {file_type} file is: {git_enabled}")
 
-    # Here we are setting the value
-    action_text = "enabled" if set_value else "disabled"
+def set_git_enabled(value):
+    """
+    Sets git.enabled to the specified value (True or False)
+    """
+    current_dir = os.getcwd()
+    workspace_file = os.path.basename(current_dir) + ".code-workspace"
+    vscode_settings = '.vscode/settings.json'
+    
+    action_text = "enabled" if value else "disabled"
     
     # Try to set the value in the workspace file first
     try:
@@ -78,13 +80,13 @@ def inject_disable_git(set_value=None):
             if 'settings' not in data:
                 data['settings'] = {}
 
-            data['settings']['git.enabled'] = set_value
+            data['settings']['git.enabled'] = value
 
             f.seek(0)  # Go back to the beginning of the file
             json.dump(data, f, indent=4)
             f.truncate()  # Remove any remaining content if the new data is shorter
 
-            print(f"Successfully set 'git.enabled': {set_value} in {workspace_file}")
+            print(f"Successfully set 'git.enabled': {value} in {workspace_file}")
 
     except FileNotFoundError:
         try:
@@ -101,12 +103,12 @@ def inject_disable_git(set_value=None):
             except FileNotFoundError:
                 data = {}
                 
-            data['git.enabled'] = set_value
+            data['git.enabled'] = value
             
             with open(vscode_settings, 'w') as f:
                 json.dump(data, f, indent=4)
                 
-            print(f"Successfully set 'git.enabled': {set_value} in {vscode_settings}")
+            print(f"Successfully set 'git.enabled': {value} in {vscode_settings}")
         except Exception as e:
             print(f"An error occurred while updating VSCode settings: {e}")
             sys.exit(1)
@@ -121,10 +123,10 @@ if __name__ == "__main__":
     group.add_argument("--enable", "--on", "-e", action="store_true", help="Enable git integration")
     args = parser.parse_args()
     
-    # Pass the value to set if --disable or --enable is specified, otherwise None
+    # Use appropriate function based on arguments
     if args.disable:
-        inject_disable_git(set_value=False)
+        set_git_enabled(False)
     elif args.enable:
-        inject_disable_git(set_value=True)
+        set_git_enabled(True)
     else:
-        inject_disable_git(set_value=None)  # Just report status
+        report_git_status()  # Just report status
