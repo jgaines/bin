@@ -11,6 +11,7 @@ really cares about is that it has to be a recent 3.x Python.
 | changelog                 | show the changelog for some apps I'm interested in                       |
 | check                     | show installed and latest versions of tools                              |
 | checkrequirements         | check local virtualenv requirements                                      |
+| disable_git.py            | script to turn off git in the workspace in the current directory         |
 | dockerhosts               | list all docker hosts from ansible repo, used by following               |
 | dockerlist                | lists apps on docker hosts                                               |
 | dockerload                | shows Docker version and usage info for all docker hosts                 |
