@@ -11,7 +11,6 @@ really cares about is that it has to be a recent 3.x Python.
 | changelog                 | show the changelog for some apps I'm interested in                       |
 | check                     | show installed and latest versions of tools                              |
 | checkrequirements         | check local virtualenv requirements                                      |
-| disable_git.py            | script to turn off git in the workspace in the current directory         |
 | dockerhosts               | list all docker hosts from ansible repo, used by following               |
 | dockerlist                | lists apps on docker hosts                                               |
 | dockerload                | shows Docker version and usage info for all docker hosts                 |
@@ -20,6 +19,7 @@ really cares about is that it has to be a recent 3.x Python.
 | flip                      | function to flip between administrator and eng-tools folders             |
 | flip.func                 | sourced script to create flip function                                   |
 | flip.py                   | python script to calculate the flipping                                  |
+| git_state.py              | script to report/toggle git in the workspace in the current directory    |
 | git-authors               | show all authors in a git repo in pyproject.toml format                  |
 | git-configs               | print a list of all currently active git configs                         |
 | git-who                   | show who has touched a file in a git repo                                |
@@ -31,9 +31,9 @@ really cares about is that it has to be a recent 3.x Python.
 | injectqa.py               | inject qa lib into a virtualenv                                          |
 | john-sync                 | synchronize select files to john.eng.netscout.com                        |
 | loglp                     | script to log print requests rather than print them                      |
-| make-local-latest.sh      | symlink all the latest mise managed tools to ~/.local/latest             |
 | make_envrc.sh             | script to create .envrc files until uv does so natively                  |
 | make_mise_toml.sh         | script to create python .mise.toml files                                 |
+| make-local-latest.sh      | symlink all the latest mise managed tools to ~/.local/latest             |
 | merge-zsh-history.sh      | merge two zsh history files (used when moving to new machine)            |
 | morning-brew.sh           | script to update brew and brew managed tools (called by start)           |
 | name_addr.sh              | do a name resolution lookup and print FQDN and IP address                |
@@ -49,8 +49,8 @@ really cares about is that it has to be a recent 3.x Python.
 | scat                      | cat file with source highlighting (I still use this occasionally)        |
 | showpath                  | dump path out with one directory per line                                |
 | soar_update.sh            | script to update soar and soar managed tools (called by start)           |
-| swarm                     | start/stop local docker swarm and load secrets from ansible              |
 | start                     | script I fire up to start up things                                      |
+| swarm                     | start/stop local docker swarm and load secrets from ansible              |
 | test.dockerignore.sh      | test a .dockerignore file against a directory                            |
 | touchpad                  | script to enable/disable touchpad                                        |
 | update                    | script to update all managed tools (called by start)                     |
