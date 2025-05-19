@@ -54,4 +54,7 @@ version=${1:-$(python -V|cut -d' ' -f2)}
 echo Using version: $version
 
 echo "[tools]
-python = { version='$version', virtualenv='.venv' }" > mise.toml
+python = '$version'
+
+[env]
+_.python.venv = { path = '.venv', create = true}" > mise.toml
