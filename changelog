@@ -26,6 +26,8 @@ if [[ "$(basename "$0")" == "releases" ]]; then
         ["uv"]="https://github.com/astral-sh/uv/releases"
         ["uv-migrator"]="https://github.com/stvnksslr/uv-migrator/releases"
         ["werk"]="https://github.com/simonask/werk"
+        ["zig"]="https://github.com/ziglang/zig/releases"
+        ["zls"]="https://github.com/zls/zls/releases"
     )
 else
     # Dictionary of application names and their changelog URLs
@@ -43,6 +45,8 @@ else
         ["uv"]="https://github.com/astral-sh/uv/blob/main/CHANGELOG.md"
         ["uv-migrator"]="https://github.com/stvnksslr/uv-migrator/blob/main/CHANGELOG.md"
         ["werk"]="https://github.com/simonask/werk"
+        ["zig"]="https://ziglang.org/download"
+        ["zls"]="https://zigtools.org/zls/releases"
     )
 fi
 
