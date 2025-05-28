@@ -9,59 +9,58 @@ LOG=$LOGDIR/start.log
 mkdir -p "$(dirname $LOG)"
 
 echo Starting chromium. | tee -a "$LOG"
-flatpak run org.chromium.Chromium &>> "$LOG" &
+flatpak run org.chromium.Chromium &>>"$LOG" &
 
 echo Starting slack. | tee -a "$LOG"
-flatpak run com.slack.Slack &>> "$LOG" &
+flatpak run com.slack.Slack &>>"$LOG" &
 
 echo Starting webex. | tee -a "$LOG"
-/opt/Webex/bin/CiscoCollabHost jgaines &>> "$LOG" &
+/opt/Webex/bin/CiscoCollabHost jgaines &>>"$LOG" &
 
 echo Starting zeal. | tee -a "$LOG"
-flatpak run org.zealdocs.Zeal &>> "$LOG" &
+flatpak run org.zealdocs.Zeal &>>"$LOG" &
 
 echo Starting Obsidian. | tee -a "$LOG"
-~/apps/Obsidian.AppImage &>> "$LOG" &
+~/apps/Obsidian.AppImage &>>"$LOG" &
 
 # If weren't not on the vpn, then update stuff in the background.
-if ip addr show tun0 &>> /dev/null; then
-    echo "On VPN, not auto updating stuff." | tee -a "$LOG"
+if ip addr show tun0 &>>/dev/null; then
+  echo "On VPN, not auto updating stuff." | tee -a "$LOG"
 else
-    echo "Not on VPN, updating repos" | tee -a "$LOG"
-    update-all-repos &> $LOGDIR/update-all-repos.log &
-    stty sane
-    echo "  and updating brew and managed tools" | tee -a "$LOG"
-    morning-brew.sh &> $LOGDIR/brew-upgrade.log &
-    stty sane
-    echo "  and updating mise and managed tools" | tee -a "$LOG"
-    mise self-update -y &> $LOGDIR/mise-self-update.log &
-    stty sane
-    echo "  and updating uv managed tools" | tee -a "$LOG"
-    uv tool upgrade --all &> $LOGDIR/uv-tool-upgrade.log &
-    stty sane
-    echo "  and updating pipx managed tools" | tee -a "$LOG"
-    pipx upgrade-all &> $LOGDIR/pipx-upgrade-all.log &
-    stty sane
-    echo "  and checking for werk updates" | tee -a "$LOG"
-    update-werk.sh &> $LOGDIR/update-werk.log &
-    stty sane
-    echo "  and updating soar and managed tools" | tee -a "$LOG"
-    soar_update.sh &> $LOGDIR/soar-update.log &
-    stty sane
-    echo "  and updating magic (mojo/max manager)" | tee -a "$LOG"
-    magic self-update &> $LOGDIR/magic-update.log &
-    stty sane
-    echo "  and updating zig/zls" | tee -a "$LOG"
-    ~/allmise/zigup.py &> $LOGDIR/zigup.log &
-    stty sane
-    # echo "  and updating lmd (maldet)" | tee -a "$LOG"
-    # update-lmd -u &> $LOGDIR/lmd.log &
-    # stty sane
+  echo "Not on VPN, updating repos" | tee -a "$LOG"
+  update-all-repos &>$LOGDIR/update-all-repos.log &
+  stty sane
+  echo "  and updating brew and managed tools" | tee -a "$LOG"
+  morning-brew.sh &>$LOGDIR/brew-upgrade.log &
+  stty sane
+  echo "  and updating mise and managed tools" | tee -a "$LOG"
+  mise self-update -y &>$LOGDIR/mise-self-update.log &
+  stty sane
+  echo "  and updating uv managed tools" | tee -a "$LOG"
+  uv tool upgrade --all &>$LOGDIR/uv-tool-upgrade.log &
+  stty sane
+  echo "  and updating pipx managed tools" | tee -a "$LOG"
+  pipx upgrade-all &>$LOGDIR/pipx-upgrade-all.log &
+  stty sane
+  echo "  and checking for werk updates" | tee -a "$LOG"
+  update-werk.sh &>$LOGDIR/update-werk.log &
+  stty sane
+  echo "  and updating soar and managed tools" | tee -a "$LOG"
+  # soar_update.sh &> $LOGDIR/soar-update.log &
+  # stty sane
+  # echo "  and updating magic (mojo/max manager)" | tee -a "$LOG"
+  magic self-update &>$LOGDIR/magic-update.log &
+  stty sane
+  echo "  and updating zig/zls" | tee -a "$LOG"
+  ~/allmise/zigup.py &>$LOGDIR/zigup.log &
+  stty sane
+  # echo "  and updating lmd (maldet)" | tee -a "$LOG"
+  # update-lmd -u &> $LOGDIR/lmd.log &
+  # stty sane
 fi
 
-date > "$LOG"
+date >"$LOG"
 echo "Updating .local/latest (latest mise managed programs)" | tee -a "$LOG"
-(sleep 30 && ~/bin/make-local-latest.sh &>> "$LOG") &
+(sleep 30 && ~/bin/make-local-latest.sh &>>"$LOG") &
 
 cd
-
