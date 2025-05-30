@@ -1,0 +1,4 @@
+#!/bin/sh
+# atom $*
+# emacsclient --alternate-editor=startemacs --no-wait $*
+nvim $*
