@@ -37,9 +37,6 @@ really cares about is that it has to be a recent 3.x Python.
 | merge-zsh-history.sh      | merge two zsh history files (used when moving to new machine)            |
 | morning-brew.sh           | script to update brew and brew managed tools (called by start)           |
 | name_addr.sh              | do a name resolution lookup and print FQDN and IP address                |
-| pipx-check-all            | check all pipx installed tools for updates (pip list -o)                 |
-| pipx-pyupgrade            | force a python upgrade to a pipx managed tool                            |
-| pipx-upgrade-all          | upgrade all pipx managed tools                                           |
 | pyusage.py                | script to analyze python usage in projects                               |
 | randpw.func               | bash function to randomly generate password                              |
 | randpwz.func              | zsh function to randomly generate password                               |
@@ -47,7 +44,6 @@ really cares about is that it has to be a recent 3.x Python.
 | removews                  | remove all spaces/tabs from a file                                       |
 | samaccountname            | script to look up sAMAccountName for one or more email addresses         |
 | scat                      | cat file with source highlighting (I still use this occasionally)        |
-| showpath                  | dump path out with one directory per line                                |
 | soar_update.sh            | script to update soar and soar managed tools (called by start)           |
 | start                     | script I fire up to start up things                                      |
 | swarm                     | start/stop local docker swarm and load secrets from ansible              |
