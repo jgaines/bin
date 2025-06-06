@@ -18,6 +18,22 @@ list_configs() {
     for ext in $(find $HOME/.config -maxdepth 1 -name "nvim.*" -type d | sed 's|.*/nvim\.||' | sort); do
         echo "  $ext"
     done
+    
+    # Check if any current config exists
+    local any_exists=0
+    for dir in "${NVIM_DIRS[@]}"; do
+        if [[ -d "$dir" ]]; then
+            any_exists=1
+            break
+        fi
+    done
+    
+    echo
+    if [[ $any_exists -eq 1 ]]; then
+        echo "There is currently an active config."
+    else
+        echo "There is no active config."
+    fi
 }
 
 # Function to backup current config with an extension
@@ -86,14 +102,28 @@ if [[ $# -eq 0 || "$1" == "--help" || "$1" == "-h" ]]; then
     echo "  -h, --help        Show this help message"
     echo
     echo "Commands:"
-    echo "  $(basename $0) EXTENSION               Backup current config and restore named config"
+    echo "  $(basename $0) EXTENSION               Backup current config as EXTENSION or restore EXTENSION if no config active"
     echo "  $(basename $0) BACKUP_EXT RESTORE_EXT  Backup current as BACKUP_EXT and restore RESTORE_EXT"
     exit 0
 elif [[ "$1" == "--list" || "$1" == "-l" ]]; then
     list_configs
 elif [[ $# -eq 1 ]]; then
-    # Default to 'default' as backup name if not specified
-    backup_config "default" && restore_config "$1"
+    # Check if any current config exists
+    any_exists=0
+    for dir in "${NVIM_DIRS[@]}"; do
+        if [[ -d "$dir" ]]; then
+            any_exists=1
+            break
+        fi
+    done
+    
+    if [[ $any_exists -eq 0 ]]; then
+        # No active config, try to restore the specified one
+        restore_config "$1"
+    else
+        # Active config exists, back it up
+        backup_config "$1"
+    fi
 elif [[ $# -eq 2 ]]; then
     swap_configs "$1" "$2"
 else

@@ -1,0 +1,43 @@
+#! /bin/bash
+
+gamedir=$HOME/.config/unity3d/IronGate
+
+backup() {
+    pushd "$gamedir" >/dev/null
+    backup_name=$(echo "Valheim$(date -Iseconds).tar.gz" | tr ':' '-')
+    tar czf "$backup_name" Valheim
+    # delete backups older than 14 days
+    find . -iname Valheim\*.tar.gz -mtime +14 -delete
+    popd >/dev/null
+}
+
+case "$1" in
+list)
+    pushd "$gamedir" >/dev/null
+    ls -lrth Valheim*.tar.gz
+    popd >/dev/null
+;;
+-h|--help|help)
+    echo ""
+    echo "Usage valheim_backup [COMMAND]"
+    echo ""
+    echo "Commands:"
+    echo "  help     show this help"
+    echo "  list     list all backups"
+    echo "  restore  will restore most recent backup (after backing up current)"
+    echo ""
+;;
+restore)
+    pushd "$gamedir" >/dev/null
+    recent=$(ls -t|head -1)
+    echo "Backing up current"
+    backup
+    echo "Removing save dir"
+    rm -rf Valheim
+    echo "Restoring $recent"
+    tar xzf "$recent"
+    popd >/dev/null
+;;
+*)
+    backup
+esac

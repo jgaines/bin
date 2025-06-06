@@ -7,14 +7,7 @@ echo "Current Language Versions"
 echo
 
 iscmd() {
-    return $(which "$1" &> /dev/null)
-    # cmd=$(which "$1" 2> /dev/null)
-    # if [ -x "$cmd" ]
-    # then
-    #     return 0
-    # else
-    #     return 1
-    # fi
+    command -v "$1" >/dev/null 2>&1
 }
 
 iscmd bun       && echo "bun        $(bun -v)  (rtx)"

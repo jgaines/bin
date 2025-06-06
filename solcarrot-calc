@@ -1,0 +1,18 @@
+#! /home/jgaines/.pyenv/versions/3.9.5/envs/bin/bin/python
+
+foods = 1000
+hearts = 40
+step = 5
+
+for 
+
+stair_depth=10
+    ...: step=5
+    ...: steps=[]
+    ...: foods=0
+    ...: while hearts < max_hearts and foods < max_food:
+    ...:     for d in range(stair_depth):
+    ...:         foods += step
+    ...:         steps.append(foods)
+    ...:     step += 5
+    ...: print(steps)

@@ -1,0 +1,36 @@
+#! /bin/bash
+
+appdir=$HOME/.local/share/Steam/steamapps/common
+datadir=$HOME/.config/unity3d/IronGate
+profiledir=$HOME/.local/share/valheim_manager/profiles
+
+case "$1" in
+list)
+    ls $profiledir
+;;
+-h|--help|help)
+    echo ""
+    echo "Usage valheim_profile [COMMAND]"
+    echo ""
+    echo "Commands:"
+    echo "  help     show this help"
+    echo "  list     list all backups"
+    echo "  show     Show current profile"
+    echo "  profile  set profile to named profile"
+    echo ""
+;;
+show)
+    ls -l $appdir/Valheim $datadir/Valheim
+;;
+*)
+    if [ -e ${profiledir}/$1/app ] && [ -e ${profiledir}/$1/data ]
+    then
+        rm ${appdir}/Valheim
+        ln -s ${profiledir}/$1/app ${appdir}/Valheim
+        rm ${datadir}/Valheim
+        ln -s ${profiledir}/$1/data ${datadir}/Valheim
+    else
+        echo "Invalid profile name, use list command."
+    fi
+;;
+esac
