@@ -3,8 +3,20 @@
 # Small script to look up sAMAccountName for one or more email addresses.
 # Provide full email addresses like: john.gaines@netscout.com
 
+# Check if credential file exists and has proper permissions
+CRED_FILE="$HOME/.ssh/ldap_bind_password"
+if [[ ! -f "$CRED_FILE" ]]; then
+    echo "Error: Credential file $CRED_FILE not found"
+    exit 1
+fi
+
+# Verify file permissions (should be readable only by owner)
+if [[ "$(stat -c '%a' "$CRED_FILE")" != "600" ]]; then
+    echo "Warning: $CRED_FILE has insecure permissions. Recommend: chmod 600 $CRED_FILE"
+fi
+
 for e in "$@"; do
     echo "$e -> $(ldapsearch -x -H ldap://netscout.com -D svc-arbor-eng-ldap@netscout.com \
-               -y ~/.ssh/ldap_bind_password -b 'DC=netscout,DC=com' \
+               -y "$CRED_FILE" -b 'DC=netscout,DC=com' \
                -s sub \(proxyAddresses="SMTP:$e"\) | grep sAMAccountName | cut -d' ' -f2)"
 done

@@ -28,7 +28,20 @@ init|on|start)
 
         pushd "$HOME/git/eng-tools/ansible"
         if [[ $? -eq 0 ]]; then
-            ansible-playbook setupdevswarmenv.yml --vault-password-file=~/.keys/.vaultpw.txt
+            VAULT_PW_FILE="$HOME/.keys/.vaultpw.txt"
+            
+            # Check if vault password file exists and has proper permissions
+            if [[ ! -f "$VAULT_PW_FILE" ]]; then
+                echo "Error: Vault password file $VAULT_PW_FILE not found"
+                popd
+                exit 1
+            fi
+            
+            if [[ "$(stat -c '%a' "$VAULT_PW_FILE")" != "600" ]]; then
+                echo "Warning: $VAULT_PW_FILE has insecure permissions. Recommend: chmod 600 $VAULT_PW_FILE"
+            fi
+            
+            ansible-playbook setupdevswarmenv.yml --vault-password-file="$VAULT_PW_FILE"
             popd
         else
             echo "Failed to cd to ansible repo."

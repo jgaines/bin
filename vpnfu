@@ -34,8 +34,19 @@ else
     esac
 fi
 
+# Check if CSD wrapper exists
+CSD_WRAPPER="$HOME/git/third-party/openconnect/trojans/csd-post.sh"
+if [[ ! -f "$CSD_WRAPPER" ]]; then
+    echo "Error: CSD wrapper script not found at $CSD_WRAPPER"
+    echo "Please ensure it exists or update the path in this script"
+    exit 1
+fi
+
+# Log VPN connection attempt (but not credentials)
+echo "$(date): Connecting to $vpnsite" >> "$HOME/.vpn_connection_log"
+
 sudo openconnect \
-    --csd-wrapper="$HOME/git/third-party/openconnect/trojans/csd-post.sh" \
+    --csd-wrapper="$CSD_WRAPPER" \
     --authgroup=Tunnel-All-VPN \
     --user="$USER" \
     --pid-file=/var/run/openconnect.pid \

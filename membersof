@@ -15,6 +15,25 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-ldapsearch -NLLLoldif-wrap=no -x -H ldaps://arb-ldap.eng.netscout.com -D jgaines@netscout.com -y ~/.ssh/bad \
+# Check if credential file exists and has proper permissions
+CRED_FILE="$HOME/.ssh/bad"
+if [[ ! -f "$CRED_FILE" ]]; then
+    echo "Error: Credential file $CRED_FILE not found"
+    exit 1
+fi
+
+# Verify file permissions
+if [[ "$(stat -c '%a' "$CRED_FILE")" != "600" ]]; then
+    echo "Warning: $CRED_FILE has insecure permissions. Recommend: chmod 600 $CRED_FILE"
+fi
+
+# Sanitize input to prevent injection attacks
+SAFE_PATTERN=$(echo "$1" | tr -cd '[:alnum:]._-')
+if [[ "$SAFE_PATTERN" != "$1" ]]; then
+    echo "Warning: Input contained special characters that were removed"
+fi
+
+# Run LDAP search with error handling
+ldapsearch -NLLLoldif-wrap=no -x -H ldaps://arb-ldap.eng.netscout.com -D jgaines@netscout.com -y "$CRED_FILE" \
     -b 'DC=netscout,DC=com' \
-    "(&(cn=*$1)(objectclass=Group))" | grep -E '(dn|member):'
+    "(&(cn=*$SAFE_PATTERN)(objectclass=Group))" | grep -E '(dn|member):' || echo "No results found or LDAP query failed"
