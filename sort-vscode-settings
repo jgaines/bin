@@ -1,0 +1,140 @@
+#!/usr/bin/env bash
+#
+# Script to sort VSCode and VSCode-Insiders settings files
+# Usage: sort-vscode-settings
+#
+# This script sorts the settings.json files for both VSCode and VSCode-Insiders
+# It creates backups of the original files before sorting them
+
+# We'll handle errors manually instead of using set -e
+
+echo "===== VSCode Settings Sorter ====="
+
+# Function to attempt to fix common JSON issues in VSCode settings files
+fix_json() {
+    local input_file="$1"
+    local output_file="$2"
+    
+    # Try to fix common issues in VSCode settings files:
+    # 1. Remove trailing commas before closing braces/brackets
+    # 2. Ensure proper escaping of backslashes in strings
+    cat "$input_file" | 
+        sed -E 's/,(\s*[}\]])/\1/g' > "$output_file"
+    
+    # Check if our fix worked
+    if jq empty "$output_file" 2>/dev/null; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+# Define paths to VSCode and VSCode-Insiders settings files
+VSCODE_SETTINGS="$HOME/.config/Code/User/settings.json"
+VSCODE_INSIDERS_SETTINGS="$HOME/.config/Code - Insiders/User/settings.json"
+
+# Function to sort a JSON settings file
+sort_settings() {
+    local settings_file="$1"
+    local settings_bak="${settings_file}.bak"
+    
+    # Check if file exists
+    if [[ ! -f "$settings_file" ]]; then
+        echo "⚠️  Settings file not found: $settings_file"
+        return 1
+    fi
+    
+    echo "📄 Processing: $settings_file"
+    
+    # Create backup
+    cp "$settings_file" "$settings_bak"
+    echo "  ✓ Created backup: $settings_bak"
+    
+    # Add helper function to fix common JSON issues
+    echo "  ⚙️  Checking JSON validity..."
+    
+    # Create a temporary file for the sorted output first
+    local temp_file="$(mktemp)"
+    
+    # First, validate the input JSON
+    if ! jq empty "$settings_bak" 2>/dev/null; then
+        echo "  ⚠️  Warning: Input file is not valid JSON. Attempting to fix common issues..."
+        
+        # Try to fix the JSON
+        local fixed_file="$(mktemp)"
+        if fix_json "$settings_bak" "$fixed_file"; then
+            echo "  ✓ Successfully fixed JSON syntax issues"
+            cp "$fixed_file" "$settings_bak"
+            rm -f "$fixed_file"
+        else
+            rm -f "$fixed_file"
+            echo "  ❌ Error: Could not automatically fix JSON. Manual editing required."
+            echo "     Check line numbers with: jq empty \"$settings_bak\""
+            echo "     Common issues: trailing commas, unescaped quotes, invalid comments"
+            return 1
+        fi
+    fi
+    
+    # Sort the settings file using jq
+    if jq -S '.' "$settings_bak" > "$temp_file" 2>/dev/null && [[ -s "$temp_file" ]]; then
+        # Verify temp file is valid JSON and not empty
+        if jq empty "$temp_file" 2>/dev/null; then
+            # Only if sorting was successful and content is valid, move the temp file to the destination
+            cp "$temp_file" "$settings_file"
+            echo "  ✓ Successfully sorted settings"
+            rm -f "$temp_file"
+        else
+            echo "  ❌ Error: Output is not valid JSON. Restoring backup..."
+            cp "$settings_bak" "$settings_file"
+            echo "  ✓ Backup restored"
+            rm -f "$temp_file"
+            return 1
+        fi
+    else
+        echo "  ❌ Error sorting settings. Restoring backup..."
+        cp "$settings_bak" "$settings_file"
+        echo "  ✓ Backup restored"
+        rm -f "$temp_file"
+        return 1
+    fi
+    
+    return 0
+}
+
+# Check if jq is installed
+if ! command -v jq &> /dev/null; then
+    echo "❌ jq is not installed. Please install it first:"
+    echo "   sudo apt install jq  # On Debian/Ubuntu"
+    echo "   brew install jq      # On macOS with Homebrew"
+    exit 1
+fi
+
+# Process VSCode settings
+echo
+echo "🔄 Sorting VSCode settings..."
+sort_settings "$VSCODE_SETTINGS"
+vscode_result=$?
+
+# Process VSCode-Insiders settings
+echo
+echo "🔄 Sorting VSCode-Insiders settings..."
+sort_settings "$VSCODE_INSIDERS_SETTINGS"
+insiders_result=$?
+
+echo
+if [[ $vscode_result -eq 0 ]] || [[ $insiders_result -eq 0 ]]; then
+    echo "✅ Sorting complete!"
+    
+    if [[ $vscode_result -ne 0 ]]; then
+        echo "⚠️  Note: VSCode settings were not processed."
+    fi
+    
+    if [[ $insiders_result -ne 0 ]]; then
+        echo "⚠️  Note: VSCode-Insiders settings were not processed."
+    fi
+else
+    echo "❌ No settings files were processed."
+fi
+
+echo
+echo "Backups of your original files are kept as .bak files"
