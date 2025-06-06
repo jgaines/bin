@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Display help information
+show_help() {
+    echo "Usage: wersions COMMAND"
+    echo "Shows all versions of COMMAND available in PATH"
+    echo ""
+    echo "Examples:"
+    echo "  wersions python     # Show all versions of python"
+    echo "  wersions node       # Show all versions of node"
+}
+
+# Check if no arguments or help flag is provided
+if [ $# -eq 0 ] || [[ "$1" == -* ]]; then
+    show_help
+    exit 0
+fi
+
+# Find all instances of the command and show their versions
+which -a "$1" | xargs -I {} sh -c 'echo "--- {} ---"; {} --version || {} -v || echo "Could not determine version for {}"' 
