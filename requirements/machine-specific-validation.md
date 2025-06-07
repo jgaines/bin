@@ -1,7 +1,10 @@
 # Machine-Specific Script Validation Requirements
 
 ## Overview
-This document defines requirements for a script validation system that ensures certain scripts only run on authorized machines or provides appropriate warnings/confirmations when run elsewhere.
+This document defines requirements for a script validation system that ensures
+certain scripts only run on certain machines or provides appropriate
+warnings/confirmations when run elsewhere.  NOTE: This is not about security, it
+is simply that some scripts will only work from certain machines.
 
 ## Background
 The ~/bin repository is synchronized across multiple machines:
@@ -9,7 +12,9 @@ The ~/bin repository is synchronized across multiple machines:
 - **Home machine** (personal use)
 - **john.eng.netscout.com** (Linux server for testing/Docker applications)
 
-Some scripts contain work-specific configurations, access credentials, or perform operations that should only occur on the primary work machine.
+Some scripts contain work-specific configurations, access credentials, or
+perform operations that should only occur on the primary work machine.  Some are
+only appropriate on my home machine.
 
 ## Requirements
 
@@ -21,7 +26,8 @@ Some scripts contain work-specific configurations, access credentials, or perfor
   - Hostname
   - Network environment (IP ranges, domain)
   - User context
-  - File system markers (specific directories/files that exist only on certain machines)
+  - File system markers (specific directories/files that exist only on certain
+    machines)
 
 #### FR-2: Script Protection Modes
 The system SHALL support multiple protection modes:
@@ -50,7 +56,8 @@ The system SHALL support multiple protection modes:
 #### FR-4: Configuration Management
 - Machine definitions SHOULD be configurable
 - Protection rules SHOULD be definable per script or script category
-- Configuration SHOULD be maintainable without modifying the core validation script
+- Configuration SHOULD be maintainable without modifying the core validation
+  script
 
 ### Non-Functional Requirements
 
@@ -103,7 +110,8 @@ And: Returns appropriate exit code for automation handling
 ### Machine Detection Strategy
 1. **Primary Method**: Hostname pattern matching
 2. **Secondary**: Network-based detection (domain, IP ranges)
-3. **Tertiary**: File system markers (e.g., presence of work-specific directories)
+3. **Tertiary**: File system markers (e.g., presence of work-specific
+   directories)
 4. **Fallback**: Environment variables or configuration files
 
 ### Integration Examples
