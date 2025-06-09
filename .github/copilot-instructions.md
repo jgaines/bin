@@ -1,7 +1,6 @@
 # GitHub Copilot Instructions
 
 This repository contains personal utility scripts and tools.
-Follow these guidelines when assisting with code generation and modifications.
 
 ## File Management
 
@@ -41,6 +40,7 @@ This repository follows these organization principles:
 - `~/bin/tests` - Test scripts that need to be preserved
 - `~/bin/steff` - Temporary files and test scripts
 - Follow established naming conventions in each directory
+- Don't leave temporary files laying around.
 
 ## Version Control
 
