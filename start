@@ -45,10 +45,10 @@ else
   echo "  and checking for werk updates" | tee -a "$LOG"
   update-werk.sh &>$LOGDIR/update-werk.log &
   stty sane
-  echo "  and updating soar and managed tools" | tee -a "$LOG"
+  # echo "  and updating soar and managed tools" | tee -a "$LOG"
   # soar_update.sh &> $LOGDIR/soar-update.log &
   # stty sane
-  # echo "  and updating magic (mojo/max manager)" | tee -a "$LOG"
+  echo "  and updating magic (mojo/max manager)" | tee -a "$LOG"
   magic self-update &>$LOGDIR/magic-update.log &
   stty sane
   echo "  and updating zig/zls" | tee -a "$LOG"
