@@ -32,20 +32,15 @@ rsync $dryrun --delete -azvHP -e "ssh -i $HOME/.ssh/id_rsa" \
         --rsync-path="sudo rsync" \
         $HOME/bin/* john.eng.netscout.com:bin/
 
-echo ZPREZTO
+# echo ZSH Configs
 rsync $dryrun -azvHP -e "ssh -i $HOME/.ssh/id_rsa" \
         --rsync-path="sudo rsync" \
-        $HOME/.zprezto/* john.eng.netscout.com:.zprezto/
+        $HOME/.zsh{env,rc} $HOME/.p10k.zsh john.eng.netscout.com:
 
 echo Select Configs from ~/.config
 rsync $dryrun -azvHP -e "ssh -i $HOME/.ssh/id_rsa" \
         --rsync-path="sudo rsync" \
         $HOME/.config/{bin,broot,mise,pip,ruff,thefuck,tlrc,uv,yazi,ripgrep} john.eng.netscout.com:.config/
-
-echo Custom starship prompt for john
-rsync $dryrun -azvHP -e "ssh -i $HOME/.ssh/id_rsa" \
-        --rsync-path="sudo rsync" \
-        $HOME/.config/starship.john.toml john.eng.netscout.com:.config/starship.toml
 
 echo Docker Config for logins
 rsync $dryrun -azvHP -e "ssh -i $HOME/.ssh/id_rsa" \
