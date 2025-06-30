@@ -1,0 +1,148 @@
+#!/usr/bin/env bash
+
+# sortjson - Sort JSON files in place with backup
+# PERMANENT SCRIPT: Sorts JSON files alphabetically by keys recursively
+# Creates backup with .json.bak extension before modifying original
+
+set -o errexit
+set -o nounset
+set -o pipefail
+if [[ "${TRACE-0}" == "1" ]]; then
+    set -o xtrace
+fi
+
+# Function to display usage information
+usage() {
+    cat << EOF
+Usage: sortjson <file.json> [file2.json ...]
+
+Sort JSON files in place, organizing all object keys alphabetically.
+Creates backup files with .json.bak extension before modifying originals.
+
+Arguments:
+  file.json    JSON file(s) to sort
+
+Options:
+  -h, --help   Show this help message
+
+Examples:
+  sortjson data.json
+  sortjson file1.json file2.json file3.json
+
+Requirements:
+  - jq command must be installed
+  - Input files must be valid JSON
+EOF
+}
+
+# Function to check if jq is installed
+check_dependencies() {
+    if ! command -v jq &> /dev/null; then
+        echo "Error: jq is required but not installed." >&2
+        echo "Please install jq: sudo apt install jq" >&2
+        exit 1
+    fi
+}
+
+# Function to validate JSON file
+validate_json() {
+    local file="$1"
+    
+    if [[ ! -f "$file" ]]; then
+        echo "Error: File '$file' does not exist." >&2
+        return 1
+    fi
+    
+    if [[ ! -r "$file" ]]; then
+        echo "Error: File '$file' is not readable." >&2
+        return 1
+    fi
+    
+    if ! jq empty "$file" 2>/dev/null; then
+        echo "Error: File '$file' contains invalid JSON." >&2
+        return 1
+    fi
+    
+    return 0
+}
+
+# Function to sort a single JSON file
+sort_json_file() {
+    local file="$1"
+    local backup_file="${file}.bak"
+    local temp_file
+    temp_file=$(mktemp)
+    
+    echo "Processing: $file"
+    
+    # Validate the JSON file first
+    if ! validate_json "$file"; then
+        rm -f "$temp_file"
+        return 1
+    fi
+    
+    # Create backup
+    if ! cp "$file" "$backup_file"; then
+        echo "Error: Failed to create backup '$backup_file'." >&2
+        rm -f "$temp_file"
+        return 1
+    fi
+    
+    echo "  Created backup: $backup_file"
+    
+    # Sort the JSON using jq
+    if ! jq 'walk(if type == "object" then to_entries | sort_by(.key) | from_entries else . end)' "$file" > "$temp_file"; then
+        echo "Error: Failed to sort JSON in '$file'." >&2
+        rm -f "$temp_file"
+        return 1
+    fi
+    
+    # Replace original file with sorted version
+    if ! mv "$temp_file" "$file"; then
+        echo "Error: Failed to write sorted JSON to '$file'." >&2
+        rm -f "$temp_file"
+        return 1
+    fi
+    
+    echo "  Sorted successfully: $file"
+    return 0
+}
+
+# Main function
+main() {
+    # Handle help option
+    if [[ $# -eq 0 ]] || [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
+        usage
+        exit 0
+    fi
+    
+    # Check dependencies
+    check_dependencies
+    
+    local exit_code=0
+    local processed=0
+    local failed=0
+    
+    # Process each file
+    for file in "$@"; do
+        if sort_json_file "$file"; then
+            ((processed++))
+        else
+            ((failed++))
+            exit_code=1
+        fi
+        echo
+    done
+    
+    # Summary
+    echo "Summary:"
+    echo "  Files processed successfully: $processed"
+    if [[ $failed -gt 0 ]]; then
+        echo "  Files failed: $failed"
+    fi
+    
+    exit $exit_code
+}
+
+# Run main function with all arguments
+main "$@"
