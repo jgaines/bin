@@ -1,13 +1,18 @@
 #!/usr/bin/env bash
 
-#set -o errexit
+# update-all-repos - Update all git repositories in a directory tree
+# PERMANENT SCRIPT: Recursively finds and updates git repositories
+# Supports dry-run mode and handles repos on different branches
+
+set -o errexit
 set -o nounset
-#set -o pipefail
+set -o pipefail
 if [[ "${TRACE-0}" == "1" ]]; then
     set -o xtrace
 fi
 
 START_DIR=$(pwd)
+GIT_ROOT="${GIT_ROOT:-$HOME/git}"
 extra=0
 dry_run=
 
@@ -24,12 +29,16 @@ do
             echo ""
             echo "Usage: $0 [options]"
             echo ""
-            echo "Updates all git repos under $START_DIR."
+            echo "Updates all git repos under \$GIT_ROOT (default: ~/git)."
             echo ""
             echo "Options:"
-            echo "  -n|--dry-run   just echo commands"
-            echo "  -e|--extra     output extra info"
+            echo "  -n|--dry-run   show commands that would be executed"
+            echo "  -e|--extra     output extra info (show local changes)"
             echo "  -h|--help      show this help"
+            echo ""
+            echo "Environment Variables:"
+            echo "  GIT_ROOT       directory to search for git repos (default: ~/git)"
+            echo ""
             exit 0
             ;;
     esac
@@ -39,37 +48,68 @@ clean=
 changed=
 branched=
 
-for REPO in $( find ~/git -name .git -exec dirname {} \; ); do
+# Validate that GIT_ROOT exists
+if [[ ! -d "$GIT_ROOT" ]]; then
+    echo "Error: Directory '$GIT_ROOT' does not exist." >&2
+    echo "Set GIT_ROOT environment variable to a valid directory." >&2
+    exit 1
+fi
+
+echo "Searching for git repositories in: $GIT_ROOT"
+
+for REPO in $(find "$GIT_ROOT" -name .git -exec dirname {} \; 2>/dev/null); do
     echo "Checking $REPO"
-    cd "$REPO" || continue
+    
+    if ! cd "$REPO"; then
+        echo "Error: Cannot access repository '$REPO'" >&2
+        continue
+    fi
+    
     REMOTE=$(git remote -v)
-    BRANCH=$(git rev-parse --abbrev-ref HEAD)
+    if ! BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null); then
+        echo "Error: Cannot determine branch for '$REPO'" >&2
+        cd "$START_DIR"
+        continue
+    fi
     if [ -z "$REMOTE" ]; then
         echo "NO REMOTE: $REPO"
     else
         if [ "$BRANCH" = "master" ] || [ "$BRANCH" = "main" ]; then
-            CHANGES=$( git status --porcelain | grep -v '??' )
-            NUM_CHANGES=$( echo "$CHANGES" | wc -w )
-            if [ "$NUM_CHANGES" -eq 0 ]; then
+            CHANGES=$(git status --porcelain | grep -v '??' || true)
+            if [ -z "$CHANGES" ]; then
                 echo "CLEAN: $REPO"
                 if [[ -n ${dry_run} ]]; then
-                    echo 'git pull --rebase=merges || { git branch --set-upstream-to=origin/$BRANCH $BRANCH && git pull --rebase=merges; }'
+                    echo "Would run: git pull --rebase=merges || { git branch --set-upstream-to=origin/$BRANCH $BRANCH && git pull --rebase=merges; }"
                 else
-                    git pull --rebase=merges || { git branch --set-upstream-to=origin/$BRANCH $BRANCH && git pull --rebase=merges; }
+                    git pull --rebase=merges || { git branch --set-upstream-to=origin/"$BRANCH" "$BRANCH" && git pull --rebase=merges; }
                 fi
                 clean="$clean:  $REPO"
             else
                 echo "CHANGES: $REPO"
                 [ $extra -eq 1 ] && echo "$CHANGES"
                 [ $extra -eq 1 ] && echo '------------------------------'
+                if [[ -n ${dry_run} ]]; then
+                    echo "Would run: git fetch || { git branch --set-upstream-to=origin/$BRANCH $BRANCH && git fetch; }"
+                else
+                    git fetch || { git branch --set-upstream-to=origin/"$BRANCH" "$BRANCH" && git fetch; }
+                fi
                 changed="$changed:  $REPO"
             fi
         else
             echo "BRANCHED: $REPO ($BRANCH)"
+            if [[ -n ${dry_run} ]]; then
+                echo "Would run: git fetch || { git branch --set-upstream-to=origin/$BRANCH $BRANCH && git fetch; }"
+            else
+                git fetch || { git branch --set-upstream-to=origin/"$BRANCH" "$BRANCH" && git fetch; }
+            fi
             branched="$branched:  $REPO"
         fi
     fi
-    cd "$START_DIR"
+    
+    if ! cd "$START_DIR"; then
+        echo "Error: Cannot return to starting directory '$START_DIR'" >&2
+        exit 1
+    fi
 done
 
 if [ -z "$dry_run" ]; then
