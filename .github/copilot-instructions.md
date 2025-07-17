@@ -41,10 +41,11 @@ This repository follows these organization principles:
 ## Version Control
 
 This repository uses Jujutsu (jj) in colocated mode on top of git:
-- Before making changes, run `jj new -m "description"  --author "copilot <copilot@jgaines.com>"`  to create a new changeset
-- Use `jj log` to view the commit history with alphabetic changeset codes
-- Changesets marked with @ are current, ○ are uncommitted, ◆ are pushed to remote
-- Use `jj show <changeset-id>` to examine changeset details
+- Before making any changes, create a new revset:
+    ```shell
+    jj new
+    jj desc -m "description"  --author "copilot <copilot@jgaines.com>"
+    ```
 
 ## Security Considerations
 
