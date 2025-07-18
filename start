@@ -1,66 +1,83 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# This script starts up all the applications I use on a daily basis.
-# When remote, I have to connect to the vpn first and then run this script.
+# start - Launch daily applications and update tools
+# PERMANENT SCRIPT: Starts applications and runs background updates when not on VPN
+# Requires connectivity to ts-prod.eng.netscout.com to proceed
 
-LOGDIR=~/.local/log
-LOG=$LOGDIR/start.log
+set -o errexit
+set -o nounset
+set -o pipefail
+if [[ "${TRACE-0}" == "1" ]]; then
+    set -o xtrace
+fi
 
-mkdir -p "$(dirname $LOG)"
+# Check connectivity to required server before proceeding
+echo "Checking connectivity to ts-prod.eng.netscout.com..."
+if ! ping -c 1 -W 5 ts-prod.eng.netscout.com &>/dev/null; then
+    echo "Error: Cannot reach ts-prod.eng.netscout.com" >&2
+    echo "Please ensure your VPN connection is active and try again." >&2
+    exit 1
+fi
+echo "Connectivity check passed."
 
-echo Starting chromium. | tee -a "$LOG"
+LOGDIR="$HOME/.local/log"
+LOG="$LOGDIR/start.log"
+
+mkdir -p "$LOGDIR"
+
+echo "Starting chromium." | tee -a "$LOG"
 flatpak run org.chromium.Chromium &>>"$LOG" &
 
-echo Starting slack. | tee -a "$LOG"
+echo "Starting slack." | tee -a "$LOG"
 flatpak run com.slack.Slack &>>"$LOG" &
 
-echo Starting webex. | tee -a "$LOG"
+echo "Starting webex." | tee -a "$LOG"
 /opt/Webex/bin/CiscoCollabHost jgaines &>>"$LOG" &
 
-echo Starting zeal. | tee -a "$LOG"
+echo "Starting zeal." | tee -a "$LOG"
 flatpak run org.zealdocs.Zeal &>>"$LOG" &
 
-echo Starting Obsidian. | tee -a "$LOG"
-~/apps/Obsidian.AppImage &>>"$LOG" &
+echo "Starting Obsidian." | tee -a "$LOG"
+"$HOME/apps/Obsidian.AppImage" &>>"$LOG" &
 
-# If weren't not on the vpn, then update stuff in the background.
-if ip addr show tun0 &>>/dev/null; then
+# Check if we're on VPN (tun0 interface exists)
+if ip addr show tun0 &>/dev/null; then
   echo "On VPN, not auto updating stuff." | tee -a "$LOG"
 else
   echo "Not on VPN, updating repos" | tee -a "$LOG"
-  update-all-repos &>$LOGDIR/update-all-repos.log &
+  "$HOME/bin/update-all-repos" &>"$LOGDIR/update-all-repos.log" &
   stty sane
   echo "  and updating brew and managed tools" | tee -a "$LOG"
-  morning-brew.sh &>$LOGDIR/brew-upgrade.log &
+  "$HOME/bin/morning-brew.sh" &>"$LOGDIR/brew-upgrade.log" &
   stty sane
   echo "  and updating mise and managed tools" | tee -a "$LOG"
-  mise self-update -y &>$LOGDIR/mise-self-update.log &
+  mise self-update -y &>"$LOGDIR/mise-self-update.log" &
   stty sane
   echo "  and updating uv managed tools" | tee -a "$LOG"
-  uv tool upgrade --all &>$LOGDIR/uv-tool-upgrade.log &
+  uv tool upgrade --all &>"$LOGDIR/uv-tool-upgrade.log" &
   stty sane
   echo "  and updating pipx managed tools" | tee -a "$LOG"
-  pipx upgrade-all &>$LOGDIR/pipx-upgrade-all.log &
+  pipx upgrade-all &>"$LOGDIR/pipx-upgrade-all.log" &
   stty sane
   echo "  and checking for werk updates" | tee -a "$LOG"
-  update-werk.sh &>$LOGDIR/update-werk.log &
+  "$HOME/bin/update-werk.sh" &>"$LOGDIR/update-werk.log" &
   stty sane
   # echo "  and updating soar and managed tools" | tee -a "$LOG"
-  # soar_update.sh &> $LOGDIR/soar-update.log &
+  # "$HOME/bin/soar_update.sh" &>"$LOGDIR/soar-update.log" &
   # stty sane
   # echo "  and updating magic (mojo/max manager)" | tee -a "$LOG"
-  # magic self-update &>$LOGDIR/magic-update.log &
+  # magic self-update &>"$LOGDIR/magic-update.log" &
   # stty sane
   echo "  and updating zig/zls" | tee -a "$LOG"
-  ~/allmise/zigup.py &>$LOGDIR/zigup.log &
+  "$HOME/allmise/zigup.py" &>"$LOGDIR/zigup.log" &
   stty sane
   # echo "  and updating lmd (maldet)" | tee -a "$LOG"
-  # update-lmd -u &> $LOGDIR/lmd.log &
+  # "$HOME/bin/update-lmd" -u &>"$LOGDIR/lmd.log" &
   # stty sane
 fi
 
 date >"$LOG"
 echo "Updating .local/latest (latest mise managed programs)" | tee -a "$LOG"
-(sleep 30 && ~/bin/make-local-latest.sh &>>"$LOG") &
+(sleep 30 && "$HOME/bin/make-local-latest.sh" &>>"$LOG") &
 
-cd
+cd "$HOME"
