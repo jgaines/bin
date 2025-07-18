@@ -44,6 +44,7 @@ do
     esac
 done
 
+jujutsu=
 clean=
 changed=
 branched=
@@ -55,10 +56,39 @@ if [[ ! -d "$GIT_ROOT" ]]; then
     exit 1
 fi
 
+echo "Searching for jj repositories in: $GIT_ROOT"
+
+for REPO in $(find "$GIT_ROOT" -name .jj -exec dirname {} \; 2>/dev/null); do
+    echo "Checking $REPO"
+
+    if ! cd "$REPO"; then
+        echo "Error: Cannot access repository '$REPO'" >&2
+        continue
+    fi
+    
+    REMOTE=$(git remote -v)
+    if [ -z "$REMOTE" ]; then
+        echo "NO REMOTE: $REPO"
+    else
+        echo "JJ: $REPO"
+        if [[ -n ${dry_run} ]]; then
+            echo "Would run: jj git fetch"
+        else
+            jj git fetch
+        fi
+        jujutsu="$jujutsu:  $REPO"
+    fi
+done
+
 echo "Searching for git repositories in: $GIT_ROOT"
 
 for REPO in $(find "$GIT_ROOT" -name .git -exec dirname {} \; 2>/dev/null); do
     echo "Checking $REPO"
+
+    if [ -d "$REPO/.jj" ]; then
+        echo "Skipping co-located jujutsu repository: $REPO"
+        continue
+    fi
     
     if ! cd "$REPO"; then
         echo "Error: Cannot access repository '$REPO'" >&2
@@ -122,6 +152,8 @@ fi
 
 echo '------------------------------'
 echo "Clean ($pulled):$(echo "$clean" | tr ':' '\n')"
+echo '------------------------------'
+echo "Jujutsu ($fetched):$(echo "$jujutsu" | tr ':' '\n')"
 echo '------------------------------'
 echo "Modified ($fetched):$(echo "$changed" | tr ':' '\n')"
 echo '------------------------------'
