@@ -113,14 +113,16 @@ for REPO in $(find "$GIT_ROOT" -name .git -exec dirname {} \; 2>/dev/null); do
 done
 
 if [ -z "$dry_run" ]; then
-    action="updated"
+    pulled="updated"
+    fetched="fetched"
 else
-    action="updatable"
+    pulled="updatable"
+    fetched="fetchable"
 fi
 
 echo '------------------------------'
-echo "Clean ($action):$(echo "$clean" | tr ':' '\n')"
+echo "Clean ($pulled):$(echo "$clean" | tr ':' '\n')"
 echo '------------------------------'
-echo "Modified (not $action):$(echo "$changed" | tr ':' '\n')"
+echo "Modified ($fetched):$(echo "$changed" | tr ':' '\n')"
 echo '------------------------------'
-echo "Branched (not $action):$(echo "$branched" | tr ':' '\n')"
+echo "Branched ($fetched):$(echo "$branched" | tr ':' '\n')"
