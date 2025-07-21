@@ -16,12 +16,19 @@ for d in ~/.local/share/mise/installs/*/*latest; do
     # If there is a bin folder, symlink all the executables
     if [[ -d "$d/bin" ]]; then
         for f in "$d/bin"/*; do
+            # Skip if not a regular file
             if [[ ! -f "$f" ]]; then
                 continue
             fi
+            # Skip if not executable
+            if [[ ! -x "$f" ]]; then
+                continue
+            fi
+            # Skip cjs (CommonJS) and Python script files
             if [[ $f == *.cjs ]] || [[ $f == *.py ]]; then
                 continue
             fi
+            # Skip if the file name contains 1, 2, or 3 (to avoid versioned binaries)
             if [[ $f == *1 ]] || [[ $f == *2 ]] || [[ $f == *3 ]]; then
                 continue
             fi
