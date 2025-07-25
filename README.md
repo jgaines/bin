@@ -34,6 +34,7 @@ really cares about is that it has to be a recent 3.x Python.
 | install-meslo-nf-fonts.sh | script to install Meslo Nerd Fonts into local fonts and kitty terminal   |
 | is_user_locked_out.py     | Python script to check if a user account is locked out                   |
 | john-sync                 | synchronize select files to john.eng.netscout.com                        |
+| justfile                  | script containing just recipes (run just to see the list of recipes)     |
 | killemacsserver           | script to kill an Emacs server                                           |
 | loglp                     | script to log print requests rather than print them                      |
 | make_envrc.sh             | script to create .envrc files until uv does so natively                  |
