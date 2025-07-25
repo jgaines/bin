@@ -65,7 +65,7 @@ stty sane
 # magic self-update &>"$LOGDIR/magic-update.log" &
 # stty sane
 echo "  and updating zig/zls" | tee -a "$LOG"
-"$HOME/allmise/zigup.py" &>"$LOGDIR/zigup.log" &
+zigup &>"$LOGDIR/zigup.log" &
 stty sane
 # echo "  and updating lmd (maldet)" | tee -a "$LOG"
 # "$HOME/bin/update-lmd" -u &>"$LOGDIR/lmd.log" &
