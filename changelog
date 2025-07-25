@@ -1,13 +1,29 @@
 #!/usr/bin/env bash
-# Script to open the changelogs of some apps I'm interested in, in the default
-# web browser.  Mostly written by my friend Gemini.
+# Script to open the releases pages or changelogs of applications in the default web browser
+# 
+# Usage Examples:
+#   releases jujutsu    # Opens jujutsu releases page
+#   changelog mise      # Opens mise changelog
+#   releases python     # Opens python releases page
+#
+# The script determines which URL list to use based on the script name:
+# - "releases" script name opens release pages
+# - "changelog" script name opens changelog pages
+#
+# PERMANENT SCRIPT - Do not remove
 
 set -o errexit
-# set -o nounset
+set -o nounset
 set -o pipefail
 if [[ "${TRACE-0}" == "1" ]]; then
     set -o xtrace
 fi
+
+# Error handling function
+error_exit() {
+    echo "Error: $1" >&2
+    exit 1
+}
 
 # pick which list to use based on the script name
 if [[ "$(basename "$0")" == "releases" ]]; then
@@ -19,6 +35,7 @@ if [[ "$(basename "$0")" == "releases" ]]; then
         ["just"]="https://github.com/casey/just/releases"
         ["kitty"]="https://github.com/kovidgoyal/kitty/releases"
         ["mise"]="https://github.com/jdx/mise/releases"
+        ["opencode"]="https://github.com/sst/opencode/releases"
         ["pony"]="https://github.com/ponylang/ponyc/releases"
         ["postgres"]="https://www.postgresql.org/docs/release"
         ["python"]="https://www.python.org/download/releases"
@@ -39,6 +56,7 @@ else
         ["just"]="https://github.com/casey/just/blob/master/CHANGELOG.md"
         ["kitty"]="https://sw.kovidgoyal.net/kitty/changelog"
         ["mise"]="https://github.com/jdx/mise/blob/main/CHANGELOG.md"
+        ["opencode"]="https://github.com/sst/opencode/releases"
         ["pony"]="https://github.com/ponylang/ponyc/blob/main/CHANGELOG.md"
         ["postgres"]="https://www.postgresql.org/docs/release"
         ["python"]="https://docs.python.org/3/whatsnew/changelog.html"
@@ -52,11 +70,16 @@ else
     )
 fi
 
+# Input sanitization
+if [[ $# -gt 1 ]]; then
+    error_exit "Too many arguments. Usage: $0 <application_name>"
+fi
+
 # Check if an application name was provided as an argument
-if [ "$#" -eq 0 ]; then
+if [[ $# -eq 0 ]]; then
     echo "Usage: $0 <application_name>"
     echo "Available applications:"
-    for app in $(echo "${!app_urls[@]}" | tr ' ' '\n' | sort); do
+    for app in $(printf '%s\n' "${!app_urls[@]}" | sort); do
         echo "  - $app"
     done
     exit 1
@@ -64,15 +87,30 @@ fi
 
 app_name="$1"
 
+# Sanitize input - only allow alphanumeric characters, hyphens, and underscores
+if [[ ! "$app_name" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+    error_exit "Invalid application name format. Only alphanumeric characters, hyphens, and underscores are allowed."
+fi
+
 # Check if the provided application name is valid
-if [[ ${app_urls[$app_name]} ]]; then
+if [[ -n "${app_urls[$app_name]:-}" ]]; then
     url="${app_urls[$app_name]}"
     echo "Opening $(basename "$0") for $app_name: $url"
-    xdg-open "$url" &> /dev/null
+    
+    # Check if xdg-open is available
+    if ! command -v xdg-open >/dev/null 2>&1; then
+        error_exit "xdg-open command not found. Please install xdg-utils or use a different browser."
+    fi
+    
+    # Open URL and handle potential errors
+    if ! xdg-open "$url" &>/dev/null; then
+        error_exit "Failed to open URL: $url"
+    fi
 else
-    echo "Invalid application name: $app_name"
+    echo "Invalid application name: $app_name" >&2
     echo "Available applications:"
-    for app in $(echo "${!app_urls[@]}" | tr ' ' '\n' | sort); do
+    for app in $(printf '%s\n' "${!app_urls[@]}" | sort); do
         echo "  - $app"
     done
+    exit 1
 fi
