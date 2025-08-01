@@ -89,9 +89,9 @@ fi
 
 app_name="$1"
 
-# Sanitize input - only allow alphanumeric characters, hyphens, and underscores
-if [[ ! "$app_name" =~ ^[a-zA-Z0-9_-]+$ ]]; then
-    error_exit "Invalid application name format. Only alphanumeric characters, hyphens, and underscores are allowed."
+# Sanitize input - only allow alphanumeric characters, hyphens, underscores, and periods
+if [[ ! "$app_name" =~ ^[a-zA-Z0-9_.-]+$ ]]; then
+    error_exit "Invalid application name format. Only alphanumeric characters, hyphens, underscores, and periods are allowed."
 fi
 
 # Check if the provided application name is valid
