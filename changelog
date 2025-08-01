@@ -29,6 +29,7 @@ error_exit() {
 if [[ "$(basename "$0")" == "releases" ]]; then
     # Dictionary of application names and their releases URLs
     declare -A app_urls=(
+        ["backlog.md"]="https://github.com/MrLesk/Backlog.md/releases"
         ["git-extras"]="https://github.com/tj/git-extras/releases"
         ["jenkins"]="https://github.com/jenkinsci/jenkins/releases"
         ["jujutsu"]="https://github.com/martinvonz/jj/releases"
@@ -50,6 +51,7 @@ if [[ "$(basename "$0")" == "releases" ]]; then
 else
     # Dictionary of application names and their changelog URLs
     declare -A app_urls=(
+        ["backlog.md"]="https://github.com/MrLesk/Backlog.md/releases"
         ["git-extras"]="https://github.com/tj/git-extras/blob/main/History.md"
         ["jenkins"]="https://www.jenkins.io/changelog"
         ["jujutsu"]="https://github.com/martinvonz/jj/blob/main/CHANGELOG.md"
