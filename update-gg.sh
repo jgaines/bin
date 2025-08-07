@@ -32,25 +32,30 @@ error_exit() {
 # Function to get latest release info
 get_latest_release() {
     local release_data
+    local curl_cmd
     
-    echo "Fetching latest release information..."
+    echo "Fetching latest release information..." >&2
     
     if [[ -n "$GITHUB_TOKEN" ]]; then
-        release_data=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
-            "https://api.github.com/repos/$REPO/releases/latest")
+        curl_cmd="curl -s -H \"Authorization: Bearer $GITHUB_TOKEN\" \"https://api.github.com/repos/$REPO/releases/latest\""
     else
-        release_data=$(curl -s "https://api.github.com/repos/$REPO/releases/latest")
+        curl_cmd="curl -s \"https://api.github.com/repos/$REPO/releases/latest\""
     fi
     
-    # Check if curl was successful
-    if [[ $? -ne 0 ]]; then
-        error_exit "Failed to fetch release information from GitHub API"
+    # Get the raw data first
+    if ! release_data=$(eval "$curl_cmd"); then
+        echo "Error: Failed to fetch release information from GitHub API" >&2
+        exit 1
     fi
+    
+    # Clean control characters
+    release_data=$(echo "$release_data" | tr -d '\000-\037')
     
     # Check for API rate limit or other errors
     if echo "$release_data" | jq -e '.message' >/dev/null 2>&1; then
         local error_msg=$(echo "$release_data" | jq -r '.message')
-        error_exit "GitHub API error: $error_msg"
+        echo "Error: GitHub API error: $error_msg" >&2
+        exit 1
     fi
     
     echo "$release_data"
@@ -61,11 +66,23 @@ get_appimage_url() {
     local release_data="$1"
     local download_url
     
+    echo "Searching for AppImage in release assets..." >&2
+    
+    # Debug: Show what we're working with
+    if [[ "${TRACE-0}" == "1" ]]; then
+        echo "Release data length: $(echo "$release_data" | wc -c)" >&2
+        echo "Assets found: $(echo "$release_data" | jq '.assets | length' 2>/dev/null || echo "jq failed")" >&2
+    fi
+    
     # Look for gg_*_amd64.AppImage in the assets
-    download_url=$(echo "$release_data" | jq -r '.assets[] | select(.name | test("gg_.*_amd64\\.AppImage$")) | .browser_download_url' | head -n1)
+    if ! download_url=$(echo "$release_data" | jq -r '.assets[] | select(.name | test("gg_.*_amd64\\.AppImage$")) | .browser_download_url' 2>/dev/null | head -n1); then
+        echo "Error: jq failed to parse release data" >&2
+        exit 1
+    fi
     
     if [[ -z "$download_url" || "$download_url" == "null" ]]; then
-        error_exit "Could not find gg_*_amd64.AppImage in the latest release"
+        echo "Error: Could not find gg_*_amd64.AppImage in the latest release" >&2
+        exit 1
     fi
     
     echo "$download_url"
@@ -144,6 +161,12 @@ update_symlink() {
     # Create bin directory if it doesn't exist
     mkdir -p "$BIN_DIR"
     
+    # Ensure the AppImage is executable
+    if [[ ! -x "$appimage_path" ]]; then
+        echo "Making AppImage executable: $appimage_path"
+        chmod +x "$appimage_path"
+    fi
+    
     # Remove existing symlink if it exists
     if [[ -L "$symlink_path" ]]; then
         echo "Removing existing symlink: $symlink_path"
@@ -155,7 +178,8 @@ update_symlink() {
         if [[ $REPLY =~ ^[Yy]$ ]]; then
             rm "$symlink_path"
         else
-            error_exit "Aborted: $symlink_path already exists and is not a symlink"
+            echo "Error: Aborted: $symlink_path already exists and is not a symlink" >&2
+            exit 1
         fi
     fi
     
