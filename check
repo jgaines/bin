@@ -37,6 +37,7 @@ get_latest_release() {
 
 # Dictionary of application names and their GitHub repos
 declare -A app_repos=(
+    ["gg"]="gulbanana/gg"
     ["git-extras"]="tj/git-extras"
     ["just"]="casey/just"
     ["kak"]="mawww/kakoune"
@@ -50,6 +51,9 @@ declare -A app_repos=(
     ["werk"]="simonask/werk"
 )
 declare -A app_version_cmds=(
+    ["gg"]="gg --version | cut -d' ' -f2"
+    ["git"]="git --version | cut -d' ' -f3"
+    ["kakoune"]="kak -version | cut -d' ' -f2 | cut -d'-' -f1 | tr -d 'v'"
     ["git-extras"]="git extras --version | cut -d' ' -f3"
     ["just"]="just --version | cut -d' ' -f2"
     ["kak"]="kak -version | cut -d' ' -f2 | cut -d'-' -f1 | tr -d 'v'"

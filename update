@@ -17,9 +17,12 @@ fi
 
 # Dictionary of application names and the command to update them
 declare -A app_update_cmds=(
+    ["gg"]="update-gg.sh"
     ["git-extras"]="git extras update"
+    ["git"]="mise up git"
     ["just"]="mise up just"
-    ["kak"]="kak-update"
+    ["kak"]="update-kak.sh"
+    ["kakoune"]="update-kak.sh"
     ["kitty"]='curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin'
     ["mise"]="mise self-update"
     ["pony"]="brew upgrade ponyc"
